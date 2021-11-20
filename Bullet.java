@@ -14,11 +14,12 @@ public class Bullet{
         this.c=c;
 
 	}
-	void moure(int k) {
-		x+=k*speed;
+	void moure() {
+		x+=speed;
 	}
 	void pintar(Graphics g) {
 		g.setColor(c);
-		g.fillRect(x, y, 4,2);
+		g.fillRect(x, y, 10,3);
 	}
+
 }
