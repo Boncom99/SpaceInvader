@@ -1,25 +1,12 @@
 import java.awt.Color;
-import java.awt.Graphics;
 
-public class Bullet{
-	int y;
-    int x;
-	int speed;
-    Color c;
-	Bullet(int x ,int y,int speed, Color c) {
-
-        this.x = x;
-		this.y=y;
-		this.speed = speed;
-        this.c=c;
-
-	}
-	void moure() {
+public class Bullet extends MovingObject{
+	@Override
+    void move() {
 		x+=speed;
-	}
-	void pintar(Graphics g) {
-		g.setColor(c);
-		g.fillRect(x, y, 10,3);
+    }
+	public Bullet(int x ,int y,int width, int height,int speed, Color c) {
+		super(x, y,width,height, speed, c);
 	}
 
 }

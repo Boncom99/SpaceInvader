@@ -1,16 +1,11 @@
 import java.awt.Color;
-import java.awt.Graphics;
 
-public class Aliens {
-	int x,y,v;
-	Aliens(int x,int y,int v) {
-		this.x=x;this.y=y;this.v=v;
+public class Aliens extends MovingObject{
+	@Override
+	void move() {
+		x-=speed;
 	}
-	void moure() {
-		x-=v;
+	Aliens(int x,int y,int width, int height , int speed,Color c ) {
+		super(x, y,width,height, speed, c);
+		}
 	}
-	void pinta(Graphics g) {
-		g.setColor(Color.BLACK);
-		g.drawRect(x, y, 30,20);
-	}
-}

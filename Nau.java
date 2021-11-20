@@ -1,22 +1,15 @@
 import java.awt.Color;
-import java.awt.Graphics;
 
-public class Nau{
-	int y;
-    int x = 100;
-	int speed;
-    Color c;
-	Nau(int y,int speed, Color c) {
-		this.y=y;
-		this.speed = speed;
-        this.c=c;
+public class Nau extends MovingObject{
+	public Nau(int x, int y,int width, int height, int speed, Color c) {
+		super(x, y,width,height, speed, c);
+	}
+	@Override
+	void move() {
+	}
 
+	void moveNau(int k){
+		y+= k*speed;
 	}
-	void moure(int k) {
-		y+=k*speed;
-	}
-	void pintar(Graphics g) {
-		g.setColor(c);
-		g.fillRect(x, y, 30,20);
-	}
+	
 }

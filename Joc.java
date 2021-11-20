@@ -4,9 +4,11 @@ import java.util.ArrayList;
 import java.util.Random;
 
 public class Joc {
-	//int y=50;
+	int X=70;
 	Graphics g;
 	Color bulletColor;
+	Color nauColor;
+	Color aliensColor;
 	Finestra f;
 	Aliens c[];
 	Nau nau;
@@ -18,7 +20,9 @@ public class Joc {
 	}
 
 	void move(int k) {
-		nau.moure(k);
+		//if (nau.IsOutOfRange(f.WIDTH, f.HEIGHT) == 0) {
+			nau.moveNau(k);
+		//}
 	}
 
 	void deleteBullet( int i) {
@@ -30,17 +34,11 @@ public class Joc {
 	}
 	void shoot() {
 
-			bullet.add(new Bullet(nau.x, nau.y, 10, bulletColor));
-			System.out.println("create bullet"+bullet.size());
+			bullet.add(new Bullet(nau.x+nau.width, nau.y+nau.height/2,10,3, 10, bulletColor));
+			//System.out.println("create bullet"+bullet.size());
 	}
 
-	int IsOutOfRange(int x, int y) {
-		if (x < 0 || x > f.AMPLADA || y < 0 || y > f.ALTURA) {
-			return 1;
-		}
-			return 0;
 
-	}
 	void run() {
 		incialitzacio();
 		while (true) {
@@ -60,24 +58,27 @@ public class Joc {
 	}
 	void incialitzacio() {
 		bulletColor = new Color(255, 100, 0);
+		nauColor = new Color(0, 50, 255);
+		aliensColor = new Color(0, 255, 10);
+		bulletColor = new Color(255, 100, 0);
 		c=new Aliens[4];
-		nau = new Nau(f.ALTURA / 2,15, Color.BLUE);
+		nau = new Nau(X,f.HEIGHT / 2,40,40,15, nauColor);
 		for(int i=0;i<c.length;i++) {
-			c[i]=new Aliens(600,Math.abs(r.nextInt())%f.ALTURA,3);
+			c[i]=new Aliens(600,Math.abs(r.nextInt())%f.HEIGHT,40,40, 3, aliensColor);
 		}
 	}
 	void movimentsAliens() {
 		for(int i=0;i<c.length;i++){
-			c[i].moure();
-			if (IsOutOfRange(c[i].x, c[i].y)==1) {
+			c[i].move();
+			if (c[i].IsOutOfRange(f.WIDTH,f.HEIGHT)==1) {
 				deleteAliens(c[i]);
 			}
 		}
 	}
 	void movimentsBullets() {
 		for(int i=0;i<bullet.size();i++){
-			bullet.get(i).moure();
-			if (IsOutOfRange(bullet.get(i).x, bullet.get(i).y)==1) {
+			bullet.get(i).move();
+			if (bullet.get(i).IsOutOfRange(f.WIDTH, f.HEIGHT)==1) {
 				deleteBullet(i);
 			}
 		}
@@ -87,13 +88,13 @@ public class Joc {
 	}
 	void repintar() {
 		g.setColor(Color.WHITE);
-		g.fillRect(0, 0, f.AMPLADA, f.ALTURA);
+		g.fillRect(0, 0, f.WIDTH, f.HEIGHT);
 		g.setColor(Color.BLACK);
 		g.drawString("hola", 50, 550);
-		nau.pintar(g);
+		nau.paint(g);
 		for(int i=0;i<bullet.size();i++)
-			bullet.get(i).pintar(g);
+			bullet.get(i).paint(g);
 		for(int i=0;i<c.length;i++)
-			c[i].pinta(g);
+			c[i].paint(g);
 	}
 }

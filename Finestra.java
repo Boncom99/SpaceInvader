@@ -9,7 +9,7 @@ import java.awt.event.WindowListener;
 public class Finestra extends Frame implements KeyListener, WindowListener {
 	Joc j;
 
-	int AMPLADA=800,ALTURA=600;
+	int WIDTH=1000,HEIGHT=800;
 	
 	//T�cnica de double buffer
 	Image im;
@@ -20,11 +20,11 @@ public class Finestra extends Frame implements KeyListener, WindowListener {
 	
 	Finestra() {
 		super("Joc");
-		setSize(AMPLADA,ALTURA);
+		setSize(WIDTH,HEIGHT);
 		setVisible(true);
 		this.addKeyListener(this);
 		addWindowListener(this);
-		im=this.createImage(AMPLADA, ALTURA);
+		im=this.createImage(WIDTH, HEIGHT);
 		g=im.getGraphics();
 		j=new Joc(this);
 		j.run();
