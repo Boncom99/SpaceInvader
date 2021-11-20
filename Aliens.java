@@ -1,9 +1,9 @@
 import java.awt.Color;
 import java.awt.Graphics;
 
-public class Cotxe {
+public class Aliens {
 	int x,y,v;
-	Cotxe(int x,int y,int v) {
+	Aliens(int x,int y,int v) {
 		this.x=x;this.y=y;this.v=v;
 	}
 	void moure() {

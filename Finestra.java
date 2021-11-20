@@ -1,18 +1,17 @@
 import java.awt.Frame;
 import java.awt.Graphics;
 import java.awt.Image;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
-public class Finestra extends Frame implements ActionListener, KeyListener, WindowListener {
 
+public class Finestra extends Frame implements KeyListener, WindowListener {
 	Joc j;
+
 	int AMPLADA=800,ALTURA=600;
 	
-	//Tecnica de double buffer
+	//T�cnica de double buffer
 	Image im;
 	Graphics g;
 	public static void main(String[] args) {
@@ -23,6 +22,8 @@ public class Finestra extends Frame implements ActionListener, KeyListener, Wind
 		super("Joc");
 		setSize(AMPLADA,ALTURA);
 		setVisible(true);
+		this.addKeyListener(this);
+		addWindowListener(this);
 		im=this.createImage(AMPLADA, ALTURA);
 		g=im.getGraphics();
 		j=new Joc(this);
@@ -35,31 +36,45 @@ public class Finestra extends Frame implements ActionListener, KeyListener, Wind
 		g.drawImage(im,0,0,null);
 	}
 
-		@Override
-	public void actionPerformed(ActionEvent e) {
-		// TODO Auto-generated method stub
-		
+	
+
+	@Override
+	public void keyReleased(KeyEvent e) {
+		//Per a saber quina tecla et pitjen, la variable 'e' rebuda cont� la tecla.
+	
 	}
 
 	@Override
 	public void keyPressed(KeyEvent e) {
-		// TODO Auto-generated method stub
-		
+	if (e.getKeyCode()==KeyEvent.VK_UP) {
+			System.out.println("up");
+			j.move(-1);
+		}
+		if (e.getKeyCode()==KeyEvent.VK_DOWN) {
+			System.out.println("down");
+			j.move(1);
+		}
+		if (e.getKeyCode()==KeyEvent.VK_SPACE) {
+			System.out.println("space");
+			j.shoot();
+		}
 	}
-
-	@Override
-	public void keyReleased(KeyEvent e) {
-		// TODO Auto-generated method stub
-		
-	}
-
 	@Override
 	public void keyTyped(KeyEvent e) {
-		// TODO Auto-generated method stub
-		
+		if (e.getKeyCode()==KeyEvent.VK_UP) {
+			System.out.println("up");
+			j.move(-1);
+		}
+		if (e.getKeyCode()==KeyEvent.VK_DOWN) {
+			System.out.println("down");
+			j.move(1);
+		}
+		if (e.getKeyCode()==KeyEvent.VK_SPACE) {
+			System.out.println("space");
+			j.shoot();
+		}
 	}
-
-	@Override
+		@Override
 	public void windowActivated(WindowEvent e) {
 		// TODO Auto-generated method stub
 		
@@ -73,9 +88,8 @@ public class Finestra extends Frame implements ActionListener, KeyListener, Wind
 
 	@Override
 	public void windowClosing(WindowEvent e) {
-		 System.exit(0); //tencar tot
-        dispose(); // tencar una finestra
-		
+	  System.exit(0);// tencar tot
+       // dispose(); // tencar una finestra	
 	}
 
 	@Override
@@ -101,7 +115,5 @@ public class Finestra extends Frame implements ActionListener, KeyListener, Wind
 		// TODO Auto-generated method stub
 		
 	}
-
-
 
 }

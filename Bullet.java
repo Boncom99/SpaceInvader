@@ -1,22 +1,24 @@
 import java.awt.Color;
 import java.awt.Graphics;
 
-public class Nau{
+public class Bullet{
 	int y;
-    int x = 100;
+    int x;
 	int speed;
     Color c;
-	Nau(int y,int speed, Color c) {
+	Bullet(int x ,int y,int speed, Color c) {
+
+        this.x = x;
 		this.y=y;
 		this.speed = speed;
         this.c=c;
 
 	}
 	void moure(int k) {
-		y+=k*speed;
+		x+=k*speed;
 	}
 	void pintar(Graphics g) {
 		g.setColor(c);
-		g.fillRect(x, y, 30,20);
+		g.fillRect(x, y, 4,2);
 	}
 }

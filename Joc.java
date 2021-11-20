@@ -5,25 +5,36 @@ import java.util.Random;
 public class Joc {
 	//int y=50;
 	Graphics g;
+	Color bulletColor;
 	Finestra f;
-	Cotxe c[];
+	Aliens c[];
 	Nau nau;
+	Bullet bullet;
 	Random r=new Random();
 	Joc(Finestra f) {
 		this.f=f;
 		this.g=f.g;
 	}
+
+	void move(int k) {
+		nau.moure(k);
+	}
+
+	void shoot() {
+		//bullet = new Bullet(nau.x, nau.y, 40, bulletColor);
+		//bullet.moure(30);
 	
+}
 	void run() {
 		incialitzacio();
 		while (true) {
-			moviments();
+			movimentsAliens();
 			xocs();
 			repintar();
 			
 			f.repaint();
 			try {
-				Thread.sleep(50);
+				Thread.sleep(10);
 			} catch (InterruptedException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -31,13 +42,15 @@ public class Joc {
 		}
 	}
 	void incialitzacio() {
-		c=new Cotxe[4];
-		nau = new Nau(f.ALTURA / 2, Color.BLUE);
+		bulletColor = new Color(255, 100, 0);
+		bullet = new Bullet(20, 20, 40, bulletColor);
+		c=new Aliens[4];
+		nau = new Nau(f.ALTURA / 2,15, Color.BLUE);
 		for(int i=0;i<c.length;i++) {
-			c[i]=new Cotxe(600,50+i*50,Math.abs(r.nextInt())%10+1);
+			c[i]=new Aliens(600,50+i*50,3);
 		}
 	}
-	void moviments() {
+	void movimentsAliens() {
 		for(int i=0;i<c.length;i++)
 			c[i].moure();
 	}
@@ -47,6 +60,8 @@ public class Joc {
 	void repintar() {
 		g.setColor(Color.WHITE);
 		g.fillRect(0, 0, f.AMPLADA, f.ALTURA);
+		g.setColor(Color.BLACK);
+		g.drawString("hola", 50, 550);
 		nau.pintar(g);
 		for(int i=0;i<c.length;i++)
 			c[i].pinta(g);
