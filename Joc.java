@@ -10,15 +10,19 @@ public class Joc {
 	Color nauColor;
 	Color aliensColor;
 	Finestra f;
-	Aliens c[];
+	ArrayList<Aliens> aliens= new ArrayList<Aliens>();
 	Nau nau;
 	ArrayList<Bullet> bullet = new ArrayList<Bullet>();
 	Random r=new Random();
+	int lvl=3;
 	Joc(Finestra f) {
 		this.f=f;
 		this.g=f.g;
 	}
 
+	void createAlines() {
+
+	}
 	void move(int k) {
 		nau.moveNau(k);
 		if (nau.IsOutOfRange(f.WIDTH, f.HEIGHT) ) {
@@ -26,12 +30,20 @@ public class Joc {
 		}
 	}
 
+	void GenerateAliens() {
+		if ((Math.abs(r.nextInt())% 10) >= 8.5) {
+			for (int i = 0; i < lvl; i++) {
+			aliens.add(new Aliens(f.WIDTH,Math.abs(r.nextInt())%f.HEIGHT,40,40, 3, aliensColor));
+			}
+		}
+
+	}
 	void deleteBullet( int i) {
 		bullet.remove(i);
 	}
 
-	void deleteAliens(Aliens a) {
-		a = null;
+	void deleteAliens(int i) {
+		aliens.remove(i);
 	}
 	void shoot() {
 
@@ -43,6 +55,7 @@ public class Joc {
 	void run() {
 		incialitzacio();
 		while (true) {
+			GenerateAliens();
 			movimentsAliens();
 			movimentsBullets();
 			xocs();
@@ -50,7 +63,7 @@ public class Joc {
 			
 			f.repaint();
 			try {
-				Thread.sleep(10);
+				Thread.sleep(20);
 			} catch (InterruptedException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -62,17 +75,16 @@ public class Joc {
 		nauColor = new Color(0, 50, 255);
 		aliensColor = new Color(0, 255, 10);
 		bulletColor = new Color(255, 100, 0);
-		c=new Aliens[4];
 		nau = new Nau(X,f.HEIGHT / 2,40,40,15, nauColor);
-		for(int i=0;i<c.length;i++) {
-			c[i]=new Aliens(600,Math.abs(r.nextInt())%f.HEIGHT,40,40, 3, aliensColor);
+		for(int i=0;i<10;i++) {
+			aliens.add(new Aliens(f.WIDTH,Math.abs(r.nextInt())%f.HEIGHT,40,40, 3, aliensColor));
 		}
 	}
 	void movimentsAliens() {
-		for(int i=0;i<c.length;i++){
-			c[i].move();
-			if (c[i].IsOutOfRange(f.WIDTH,f.HEIGHT)) {
-				deleteAliens(c[i]);
+		for(int i=0;i<aliens.size();i++){
+			aliens.get(i).move();
+			if (aliens.get(i).IsOutOfRange(f.WIDTH,f.HEIGHT)) {
+				deleteAliens(i);
 			}
 		}
 	}
@@ -95,7 +107,7 @@ public class Joc {
 		nau.paint(g);
 		for(int i=0;i<bullet.size();i++)
 			bullet.get(i).paint(g);
-		for(int i=0;i<c.length;i++)
-			c[i].paint(g);
+		for(int i=0;i<aliens.size();i++)
+			aliens.get(i).paint(g);
 	}
 }

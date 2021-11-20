@@ -63,7 +63,6 @@ public class Finestra extends Frame implements KeyListener, WindowListener {
 	public void keyPressed(KeyEvent e) {
 		 if(!keys.contains(e.getKeyCode())){
         keys.add(e.getKeyCode());
-			System.out.println(keys.get(keys.size()-1));
     }
 	}
 	@Override
