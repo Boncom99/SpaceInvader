@@ -8,7 +8,7 @@ import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
 
 public class Finestra extends Frame implements KeyListener, WindowListener {
-	Joc j;
+	Game j;
 
 	int WIDTH=1000,HEIGHT=800;
     ArrayList<Integer> keys=new ArrayList<Integer>();	
@@ -20,14 +20,14 @@ public class Finestra extends Frame implements KeyListener, WindowListener {
 	}
 	
 	Finestra() {
-		super("Joc");
+		super("Space Invader");
 		setSize(WIDTH,HEIGHT);
 		setVisible(true);
 		this.addKeyListener(this);
 		addWindowListener(this);
 		im=this.createImage(WIDTH, HEIGHT);
 		g=im.getGraphics();
-		j=new Joc(this);
+		j=new Game(this);
 		j.run();
 	}
 
