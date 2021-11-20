@@ -20,9 +20,10 @@ public class Joc {
 	}
 
 	void move(int k) {
-		//if (nau.IsOutOfRange(f.WIDTH, f.HEIGHT) == 0) {
-			nau.moveNau(k);
-		//}
+		nau.moveNau(k);
+		if (nau.IsOutOfRange(f.WIDTH, f.HEIGHT) ) {
+		nau.moveNau(-k);
+		}
 	}
 
 	void deleteBullet( int i) {
@@ -70,7 +71,7 @@ public class Joc {
 	void movimentsAliens() {
 		for(int i=0;i<c.length;i++){
 			c[i].move();
-			if (c[i].IsOutOfRange(f.WIDTH,f.HEIGHT)==1) {
+			if (c[i].IsOutOfRange(f.WIDTH,f.HEIGHT)) {
 				deleteAliens(c[i]);
 			}
 		}
@@ -78,7 +79,7 @@ public class Joc {
 	void movimentsBullets() {
 		for(int i=0;i<bullet.size();i++){
 			bullet.get(i).move();
-			if (bullet.get(i).IsOutOfRange(f.WIDTH, f.HEIGHT)==1) {
+			if (bullet.get(i).IsOutOfRange(f.WIDTH, f.HEIGHT)) {
 				deleteBullet(i);
 			}
 		}

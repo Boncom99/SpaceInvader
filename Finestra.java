@@ -1,6 +1,7 @@
 import java.awt.Frame;
 import java.awt.Graphics;
 import java.awt.Image;
+import java.util.ArrayList;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.event.WindowEvent;
@@ -10,7 +11,7 @@ public class Finestra extends Frame implements KeyListener, WindowListener {
 	Joc j;
 
 	int WIDTH=1000,HEIGHT=800;
-	
+    ArrayList<Integer> keys=new ArrayList<Integer>();	
 	//T�cnica de double buffer
 	Image im;
 	Graphics g;
@@ -29,7 +30,19 @@ public class Finestra extends Frame implements KeyListener, WindowListener {
 		j=new Joc(this);
 		j.run();
 	}
-	public void update(Graphics g) {	//millora la sincronia del pintat
+
+	public void update(Graphics g) {
+		if(keys.contains(KeyEvent.VK_DOWN)){
+			j.move(1);
+		}
+		if (keys.contains(KeyEvent.VK_UP)) {
+			j.move(-1);
+		}
+		if(keys.contains(KeyEvent.VK_SPACE)){
+			j.shoot();
+		}
+
+
 		paint(g);
 	}
 	public void paint(Graphics g) {
@@ -41,38 +54,21 @@ public class Finestra extends Frame implements KeyListener, WindowListener {
 	@Override
 	public void keyReleased(KeyEvent e) {
 		//Per a saber quina tecla et pitjen, la variable 'e' rebuda cont� la tecla.
-	
+ 	if(keys.contains(e.getKeyCode())){
+        keys.remove(keys.indexOf(e.getKeyCode()));
+    }	
 	}
 
 	@Override
 	public void keyPressed(KeyEvent e) {
-	if (e.getKeyCode()==KeyEvent.VK_UP) {
-			System.out.println("up");
-			j.move(-1);
-		}
-		if (e.getKeyCode()==KeyEvent.VK_DOWN) {
-			System.out.println("down");
-			j.move(1);
-		}
-		if (e.getKeyCode()==KeyEvent.VK_SPACE) {
-			System.out.println("space");
-			j.shoot();
-		}
+		 if(!keys.contains(e.getKeyCode())){
+        keys.add(e.getKeyCode());
+			System.out.println(keys.get(keys.size()-1));
+    }
 	}
 	@Override
 	public void keyTyped(KeyEvent e) {
-		if (e.getKeyCode()==KeyEvent.VK_UP) {
-			System.out.println("up");
-			j.move(-1);
-		}
-		if (e.getKeyCode()==KeyEvent.VK_DOWN) {
-			System.out.println("down");
-			j.move(1);
-		}
-		if (e.getKeyCode()==KeyEvent.VK_SPACE) {
-			System.out.println("space");
-			j.shoot();
-		}
+	
 	}
 		@Override
 	public void windowActivated(WindowEvent e) {

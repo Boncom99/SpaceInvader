@@ -19,11 +19,11 @@ public abstract class MovingObject{
         this.c=c;
 
 	}
-    int IsOutOfRange(int w_width, int w_height) {
+    boolean IsOutOfRange(int w_width, int w_height) {
 		if (x < 0 || x > w_width || y < 0 || y >w_height) {
-			return 1;
+			return true;
 		}
-			return 0;
+			return false;
 
 	}
     abstract void move();
