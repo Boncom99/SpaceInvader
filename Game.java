@@ -18,7 +18,7 @@ public class Game {
 	ArrayList<Bullet> bullet = new ArrayList<Bullet>();
 	Random r=new Random();
 	int lvl=1;
-	int lives=100;
+	int lives=5;
 	Game(Finestra f) {
 		this.f=f;
 		this.g=f.g;
@@ -63,11 +63,10 @@ public class Game {
 		initialize();
 		while (!gameOver()) {
 			GenerateAliens();
+			impacts();
 			moveAliens();
 			moveBullets();
-			impacts();
 			rePaint();
-			
 			f.repaint();
 			try {
 				Thread.sleep(20);
@@ -104,19 +103,26 @@ public class Game {
 			}
 		}
 	}
+
 	void impacts() {
-		for (int b = 0; b < bullet.size(); b++) {
-			for (int a = 0; a < aliens.size();a++) {
-				Bullet B=bullet.get(b);
-				Aliens A=aliens.get(a);
-				if ((A.x<= B.x+B.width&& B.x+B.width<= A.x+ A.width) && (A.y<=B.y &&B.y <=A.y+A.height) ) {
-					deleteAliens(a);
-					deleteBullet(b);
-				}
+		if (bullet.size() > 0 && aliens.size() > 0) {
+
+			for (int b = 0; b < bullet.size(); b++) {
+				for (int a = 0; a < aliens.size();a++) {
+					Bullet B=bullet.get(b);
+					Aliens A=aliens.get(a);
+					if ((A.x<= B.x+B.width&& B.x+B.width<= A.x+ A.width) && (A.y<=B.y &&B.y <=A.y+A.height) ) {
+					System.out.println(aliens.size() + " delete alien "+a);
+						deleteAliens(a);
+					System.out.println(bullet.size() + " delete bullet"+b);
+						deleteBullet(b);
+					}
 			}
+		}
 		}
 		
 	}
+
 	void rePaint() {
 		g.setColor(backgroundColor);
 		g.fillRect(0, 0, f.WIDTH, f.HEIGHT);
