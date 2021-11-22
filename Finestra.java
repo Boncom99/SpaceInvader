@@ -2,6 +2,7 @@ import java.awt.Frame;
 import java.awt.Graphics;
 import java.awt.Image;
 import java.util.ArrayList;
+import java.util.List;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.event.WindowEvent;
@@ -11,7 +12,7 @@ public class Finestra extends Frame implements KeyListener, WindowListener {
 	Game j;
 
 	int WIDTH=1000,HEIGHT=800;
-    ArrayList<Integer> keys=new ArrayList<Integer>();	
+    List<Integer> keys=new ArrayList<Integer>();	
 	//T�cnica de double buffer
 	Image im;
 	Graphics g;

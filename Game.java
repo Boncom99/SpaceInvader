@@ -1,6 +1,7 @@
 import java.awt.Color;
 import java.awt.Graphics;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
 
 public class Game {
@@ -13,12 +14,13 @@ public class Game {
 	Color shipColor;
 	Color aliensColor;
 	Finestra f;
-	ArrayList<Aliens> aliens= new ArrayList<Aliens>();
+	List<Aliens> aliens= new ArrayList<Aliens>();
 	Ship ship;
-	ArrayList<Bullet> bullet = new ArrayList<Bullet>();
+	List<Bullet> bullet = new ArrayList<Bullet>();
 	Random r=new Random();
 	int lvl=1;
 	int lives=5;
+	int MaxBullets = 30;
 	Game(Finestra f) {
 		this.f=f;
 		this.g=f.g;
@@ -53,8 +55,11 @@ public class Game {
 		aliens.remove(i);
 	}
 	void shoot() {
-
+		if (bullet.size() < MaxBullets - 1) {
 			bullet.add(new Bullet(ship.x+ship.width, ship.y+ship.height/2,10,3, 10, bulletColor));
+			//bullet.add(new Bullet(ship.x+ship.width, ship.y+ship.height/3,10,3, 10, bulletColor));
+			//bullet.add(new Bullet(ship.x+ship.width, ship.y+2*ship.height/3,10,3, 10, bulletColor));
+			}
 			//System.out.println("create bullet"+bullet.size());
 	}
 
@@ -107,20 +112,22 @@ public class Game {
 	void impacts() {
 		if (bullet.size() > 0 && aliens.size() > 0) {
 
-			for (int b = 0; b < bullet.size(); b++) {
-				for (int a = 0; a < aliens.size();a++) {
-					Bullet B=bullet.get(b);
-					Aliens A=aliens.get(a);
-					if ((A.x<= B.x+B.width&& B.x+B.width<= A.x+ A.width) && (A.y<=B.y &&B.y <=A.y+A.height) ) {
-					System.out.println(aliens.size() + " delete alien "+a);
-						deleteAliens(a);
-					System.out.println(bullet.size() + " delete bullet"+b);
-						deleteBullet(b);
-					}
+		List<Bullet> foundB = new ArrayList<Bullet>();
+		List<Aliens> foundA = new ArrayList<Aliens>();
+		for (Bullet b : bullet) {
+			for (Aliens a : aliens) {
+				if ((a.x <= b.x + b.width) && (a.y <= b.y && b.y <= a.y + a.height)) {
+					foundB.add(b);
+					foundA.add(a);
+				}
 			}
 		}
+			bullet.removeAll(foundB);
+			aliens.removeAll(foundA);
+		foundA = null;
+		foundB = null;
 		}
-		
+
 	}
 
 	void rePaint() {
@@ -130,8 +137,8 @@ public class Game {
 		g.fillRect(0, 0, X-10, f.HEIGHT);
 		g.setColor(textColor);
 		g.drawString("Level: "+ lvl, 20, 550);
-		g.drawString("❤️: "+lives, 20, 520);
-		g.drawString("bullets: " + bullet.size(), 20, 600);
+		g.drawString("❤️ : "+lives, 20, 520);
+		g.drawString("bullets left: " +(MaxBullets-bullet.size()), 20, 600);
 		ship.paint(g);
 		for(int i=0;i<bullet.size();i++)
 			bullet.get(i).paint(g);
