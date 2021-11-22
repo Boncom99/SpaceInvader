@@ -15,12 +15,12 @@ public class Aliens extends MovingObject{
 		}
 
 		void paintAlien(Graphics g){
-		g.setColor(Color.ORANGE);
+		g.setColor(new Color(235, 223, 100)); //groc
 		int w = (width / totalLives) * (totalLives - lives);
 		System.out.println(w);
 		g.fillRect(x, y,w,height);
 		//g.setColor(c);
-		g.setColor(Color.MAGENTA);
+		g.setColor( new Color(219, 85, 221)); //magenta
 		g.fillRect(x+w, y, (width/totalLives) *(lives),height);
 		}
 	}

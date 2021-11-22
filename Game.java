@@ -37,7 +37,7 @@ public class Game {
 	Graphics g;
 	Color textColor= new Color(255,255 , 255);
 	Color backgroundColor= new Color(0,0 , 0);
-	Color groundColor= new Color(147, 81, 22);
+	Color groundColor= new Color(98, 222, 109);
 	Finestra f;
 	int numOfRails;
 	Random r=new Random();
@@ -130,10 +130,10 @@ public class Game {
 		}
 	}
 	void initialize() {
-		bulletColor = new Color(255, 100, 0);
-		shipColor = new Color(0, 50, 255);
+		bulletColor = new Color(248, 59, 58) ; //red
+		shipColor = new Color (83, 83, 241); //lila
 		aliensColor = new Color(0, 255, 10);
-		bulletColor = new Color(255, 100, 0);
+		bulletColor = new Color(248, 59, 58);
 		ship = new Ship(X,f.HEIGHT / 2,25,100,speedShip, shipColor);
 		numOfRails = f.HEIGHT / (40 + 5);
 	}
@@ -207,8 +207,8 @@ public class Game {
 			bullet.get(i).paint(g);
 		for(int i=0;i<aliens.size();i++)
 			aliens.get(i).paintAlien(g);
-		g.setColor(Color.YELLOW);
-		g.fillRect(f.WIDTH/4, f.HEIGHT/4, 3*(f.WIDTH/4), 3*(f.HEIGHT/4));
+		g.setColor(new Color(66, 233, 244));
+		g.fillRect(f.WIDTH/4, f.HEIGHT/4, 2*(f.WIDTH/4), 2*(f.HEIGHT/4));
 		g.setColor(Color.BLACK);
 		g.drawString("GAME OVER ", f.WIDTH/2, f.HEIGHT/2);
 	}
