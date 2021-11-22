@@ -5,37 +5,59 @@ import java.util.List;
 import java.util.Random;
 
 public class Game {
+	boolean showInfo = true;
+	boolean showLog= true;
+	//bullets
+	List<Bullet> bullet = new ArrayList<Bullet>();
+	Color bulletColor;
+	long timeOfLastProjectile =  System.currentTimeMillis();
+	int timeDelayBullet = 50;
+	int speedBullets=10;
+	int MaxBullets = 30;
+	int bulletPower = 1;
+	//Aliens
+	List<Aliens> aliens= new ArrayList<Aliens>();
+	Color aliensColor;
+	int speedAliens=1;
+	int MaxAliens= 25;
+	int AliensLives = 1;
+	//Ship
+	Color shipColor;
+	int numsOfGuns=1;
+	int speedShip=7;
+	Ship ship;
+	
 	int level=0;
+	int lives=5000;
 	int score = 0;
 	long durationOfLevel = 30000;
 	long timeOfLastLevel= 0;
 	int X=70;
 	Graphics g;
-	Color bulletColor;
 	Color textColor= new Color(255,255 , 255);
 	Color backgroundColor= new Color(0,0 , 0);
 	Color groundColor= new Color(147, 81, 22);
-	Color shipColor;
-	Color aliensColor;
-	long timeOfLastProjectile = 0;
-	int timeDelayBullet = 50;
 	Finestra f;
-	List<Aliens> aliens= new ArrayList<Aliens>();
-	Ship ship;
-	List<Bullet> bullet = new ArrayList<Bullet>();
+	int numOfRails;
 	Random r=new Random();
-	int lives=5;
-	int MaxBullets = 30;
 	Game(Finestra f) {
 		this.f=f;
 		this.g=f.g;
 	}
 
 	void updateVarsOnLevelChange() {
-		MaxBullets += level * 10;
-		lives+= level ;
-		timeDelayBullet -= level * 2;
-		durationOfLevel += level * 1000;
+		MaxBullets += 10;
+		MaxAliens+=  10;
+		lives+= 2 ;
+		bulletPower += 1;
+		AliensLives += 2;
+		timeDelayBullet -=  2;
+		durationOfLevel += level * 400;
+		speedAliens += 1;
+		speedShip+= 1;
+		speedBullets+= 2;
+			numsOfGuns +=1;
+
 
 	}
 	boolean gameOver() {
@@ -52,10 +74,9 @@ public class Game {
 	}
 
 	void GenerateAliens() {
-		if ((Math.abs(r.nextInt())% 100) >= 98) {
-			for (int i = 0; i < level; i++) {
-			aliens.add(new Aliens(f.WIDTH,Math.abs(r.nextInt())%f.HEIGHT,40,40, 3, aliensColor));
-			}
+		while(aliens.size() <= MaxAliens) {
+
+			aliens.add(new Aliens(f.WIDTH,45+(45*(Math.abs(r.nextInt())%(numOfRails-1))),40,40, speedAliens, aliensColor));
 		}
 
 	}
@@ -72,7 +93,9 @@ public class Game {
 		if (bullet.size() < MaxBullets - 1) {
 			if (time < 0 || time > timeDelayBullet) {
   			  	timeOfLastProjectile = timeNow;
-				bullet.add(new Bullet(ship.x+ship.width, ship.y+ship.height/2,10,3, 10, bulletColor));
+				for (int i = 0; i < numsOfGuns; i++) {
+				bullet.add(new Bullet(ship.x+ship.width, ship.y+i*ship.height/numsOfGuns,8,3, speedBullets, bulletColor));
+				}
 			}
 }
 	}
@@ -82,11 +105,10 @@ public class Game {
 		initialize();
 		while (!gameOver()) {
 		long Now = System.currentTimeMillis();
-		long duration = Now - timeOfLastLevel;
-			if ( duration > durationOfLevel) {
-  			  	timeOfLastLevel = Now;
+			if ((Now - timeOfLastLevel) > durationOfLevel) {
 				level++;
 				updateVarsOnLevelChange();
+  			  	timeOfLastLevel = Now;
 			}
 			GenerateAliens();
 			impacts();
@@ -95,7 +117,7 @@ public class Game {
 			rePaint(Now);
 			f.repaint();
 			try {
-				Thread.sleep(20);
+				Thread.sleep(15);
 			} catch (InterruptedException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -107,10 +129,8 @@ public class Game {
 		shipColor = new Color(0, 50, 255);
 		aliensColor = new Color(0, 255, 10);
 		bulletColor = new Color(255, 100, 0);
-		ship = new Ship(X,f.HEIGHT / 2,40,40,15, shipColor);
-		for(int i=0;i<10;i++) {
-			aliens.add(new Aliens(f.WIDTH,Math.abs(r.nextInt())%f.HEIGHT,40,40, 3, aliensColor));
-		}
+		ship = new Ship(X,f.HEIGHT / 2,25,100,speedShip, shipColor);
+		numOfRails = f.HEIGHT / (40 + 5);
 	}
 	void moveAliens() {
 		for(int i=0;i<aliens.size();i++){
@@ -158,11 +178,21 @@ public class Game {
 		g.setColor(groundColor);
 		g.fillRect(0, 0, X-10, f.HEIGHT);
 		g.setColor(textColor);
-		g.drawString("Score: "+ score, 20, 500);
-		g.drawString("Level: "+ level, 20, 550);
-		g.drawString("time left: "+(-Now+timeOfLastLevel+durationOfLevel), 20, 600);
-		g.drawString("❤️ : "+lives, 20, 520);
-		g.drawString("bullets left: " +(MaxBullets-bullet.size()), 20, 650);
+		if (showInfo) {
+			g.drawString("Score: " + score, 20, 500);
+			g.drawString("Level: " + (level), 20, 550);
+			g.drawString("time left: " + (-Now + timeOfLastLevel + durationOfLevel), 20, 600);
+			g.drawString("❤️ : " + lives, 20, 520);
+			g.drawString("bullets left: " + (MaxBullets - bullet.size()), 20, 650);
+		}
+		if (showLog) {
+		g.drawString("speed of bullets "+ speedBullets, 20, 100);
+		g.drawString("max num of aliens "+ MaxAliens, 20, 150);
+		g.drawString("Ship speed "+ speedShip, 20, 200);
+		g.drawString("Aliens speed "+ speedAliens, 20, 250);
+		g.drawString("numOfrails "+ numOfRails, 20, 300);
+	
+		}
 		ship.paint(g);
 		for(int i=0;i<bullet.size();i++)
 			bullet.get(i).paint(g);
