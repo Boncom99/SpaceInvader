@@ -20,7 +20,8 @@ public class Game {
 	Color aliensColor;
 	int speedAliens=1;
 	int MaxAliens= 25;
-	int AliensLives = 1;
+	int AliensLives = 10;
+	
 	//Ship
 	Color shipColor;
 	int numsOfGuns=1;
@@ -76,7 +77,7 @@ public class Game {
 	void GenerateAliens() {
 		while(aliens.size() <= MaxAliens) {
 
-			aliens.add(new Aliens(f.WIDTH,45+(45*(Math.abs(r.nextInt())%(numOfRails-1))),40,40, speedAliens, aliensColor));
+			aliens.add(new Aliens(f.WIDTH,45+(45*(Math.abs(r.nextInt())%(numOfRails-1))),80,40, speedAliens, aliensColor,AliensLives));
 		}
 
 	}
@@ -158,8 +159,13 @@ public class Game {
 		for (Bullet b : bullet) {
 			for (Aliens a : aliens) {
 				if ((a.x <= b.x + b.width) && (a.y <= b.y && b.y <= a.y + a.height)) {
-					foundB.add(b);
+					if (a.lives == 1) {
 					foundA.add(a);
+					}
+					else {
+						a.lives--;
+					}
+					foundB.add(b);
 					score++;
 				}
 			}
@@ -197,6 +203,6 @@ public class Game {
 		for(int i=0;i<bullet.size();i++)
 			bullet.get(i).paint(g);
 		for(int i=0;i<aliens.size();i++)
-			aliens.get(i).paint(g);
+			aliens.get(i).paintAlien(g);
 	}
 }
