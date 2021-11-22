@@ -29,7 +29,7 @@ public class Game {
 	Ship ship;
 	
 	int level=0;
-	int lives=5000;
+	int lives=50;
 	int score = 0;
 	long durationOfLevel = 30000;
 	long timeOfLastLevel= 0;
@@ -124,6 +124,10 @@ public class Game {
 				e.printStackTrace();
 			}
 		}
+		if (gameOver()) {
+		rePaintEND();
+			f.repaint();	
+		}
 	}
 	void initialize() {
 		bulletColor = new Color(255, 100, 0);
@@ -178,7 +182,37 @@ public class Game {
 
 	}
 
-	void rePaint(long Now) {
+	void rePaintEND() {
+		g.setColor(backgroundColor);
+		g.fillRect(0, 0, f.WIDTH, f.HEIGHT);
+		g.setColor(groundColor);
+		g.fillRect(0, 0, X-10, f.HEIGHT);
+		g.setColor(textColor);
+		if (showInfo) {
+			g.drawString("Score: " + score, 20, 500);
+			g.drawString("Level: " + (level), 20, 550);
+			g.drawString("❤️ : " + lives, 20, 520);
+			g.drawString("bullets left: " + (MaxBullets - bullet.size()), 20, 650);
+		}
+		if (showLog) {
+		g.drawString("speed of bullets "+ speedBullets, 20, 100);
+		g.drawString("max num of aliens "+ MaxAliens, 20, 150);
+		g.drawString("Ship speed "+ speedShip, 20, 200);
+		g.drawString("Aliens speed "+ speedAliens, 20, 250);
+		g.drawString("numOfrails "+ numOfRails, 20, 300);
+	
+		}
+		ship.paint(g);
+		for(int i=0;i<bullet.size();i++)
+			bullet.get(i).paint(g);
+		for(int i=0;i<aliens.size();i++)
+			aliens.get(i).paintAlien(g);
+		g.setColor(Color.YELLOW);
+		g.fillRect(f.WIDTH/4, f.HEIGHT/4, 3*(f.WIDTH/4), 3*(f.HEIGHT/4));
+		g.setColor(Color.BLACK);
+		g.drawString("GAME OVER ", f.WIDTH/2, f.HEIGHT/2);
+	}
+		void rePaint(long Now) {
 		g.setColor(backgroundColor);
 		g.fillRect(0, 0, f.WIDTH, f.HEIGHT);
 		g.setColor(groundColor);
