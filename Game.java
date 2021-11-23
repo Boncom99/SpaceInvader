@@ -13,14 +13,16 @@ public class Game {
 	long timeOfLastProjectile =  System.currentTimeMillis();
 	int timeDelayBullet = 50;
 	int speedBullets=10;
-	int MaxBullets = 30;
 	int bulletPower = 1;
 	//Aliens
 	List<Aliens> aliens= new ArrayList<Aliens>();
 	Color aliensColor;
 	int speedAliens=1;
 	int MaxAliens= 25;
-	int AliensLives = 10;
+	int AliensLives = 1;
+	long durationOfAliens= 2000;
+	long timeOfLastAliens= 0;
+	int AliensHeight=20;
 	
 	//Ship
 	Color shipColor;
@@ -29,6 +31,7 @@ public class Game {
 	Ship ship;
 	
 	int level=0;
+	long NumOfFrames=0;
 	int lives=50;
 	int score = 0;
 	long durationOfLevel = 30000;
@@ -39,7 +42,7 @@ public class Game {
 	Color backgroundColor= new Color(0,0 , 0);
 	Color groundColor= new Color(98, 222, 109);
 	Finestra f;
-	int numOfRails;
+	int numOfAliensPerColumn;
 	Random r=new Random();
 	Game(Finestra f) {
 		this.f=f;
@@ -47,7 +50,6 @@ public class Game {
 	}
 
 	void updateVarsOnLevelChange() {
-		MaxBullets += 10;
 		MaxAliens+=  10;
 		lives+= 2 ;
 		bulletPower += 1;
@@ -75,9 +77,10 @@ public class Game {
 	}
 
 	void GenerateAliens() {
-		while(aliens.size() <= MaxAliens) {
 
-			aliens.add(new Aliens(f.WIDTH,45+(45*(Math.abs(r.nextInt())%(numOfRails-1))),80,40, speedAliens, aliensColor,AliensLives));
+		for (int i = 0; i < numOfAliensPerColumn; i++) {
+
+			aliens.add(new Aliens(f.WIDTH-40,5*AliensHeight+ AliensHeight*i,80,AliensHeight, speedAliens, aliensColor,AliensLives));
 		}
 
 	}
@@ -91,27 +94,32 @@ public class Game {
 	void shoot() {
 		long timeNow = System.currentTimeMillis();
 		long time = timeNow - timeOfLastProjectile;
-		if (bullet.size() < MaxBullets - 1) {
 			if (time < 0 || time > timeDelayBullet) {
   			  	timeOfLastProjectile = timeNow;
-				for (int i = 0; i < numsOfGuns; i++) {
-				bullet.add(new Bullet(ship.x+ship.width, ship.y+i*ship.height/numsOfGuns,8,3, speedBullets, bulletColor));
+				for (int i = 1; i < numsOfGuns+1; i++) {
+				bullet.add(new Bullet(ship.x+ship.width, ship.y+i*ship.height/(numsOfGuns+1),8,3, speedBullets, bulletColor));
 				}
 			}
-}
 	}
 
 
 	void run() {
 		initialize();
 		while (!gameOver()) {
+			NumOfFrames++;
 		long Now = System.currentTimeMillis();
 			if ((Now - timeOfLastLevel) > durationOfLevel) {
 				level++;
 				updateVarsOnLevelChange();
   			  	timeOfLastLevel = Now;
 			}
-			GenerateAliens();
+			if (NumOfFrames>250) {
+				NumOfFrames = 0;
+				GenerateAliens();
+  			  	timeOfLastAliens = Now;
+			}
+
+
 			impacts();
 			moveAliens();
 			moveBullets();
@@ -134,8 +142,9 @@ public class Game {
 		shipColor = new Color (83, 83, 241); //lila
 		aliensColor = new Color(0, 255, 10);
 		bulletColor = new Color(248, 59, 58);
+
+	numOfAliensPerColumn = f.HEIGHT / (AliensHeight + 4) -10;
 		ship = new Ship(X,f.HEIGHT / 2,25,100,speedShip, shipColor);
-		numOfRails = f.HEIGHT / (40 + 5);
 	}
 	void moveAliens() {
 		for(int i=0;i<aliens.size();i++){
@@ -188,20 +197,6 @@ public class Game {
 		g.setColor(groundColor);
 		g.fillRect(0, 0, X-10, f.HEIGHT);
 		g.setColor(textColor);
-		if (showInfo) {
-			g.drawString("Score: " + score, 20, 500);
-			g.drawString("Level: " + (level), 20, 550);
-			g.drawString("❤️ : " + lives, 20, 520);
-			g.drawString("bullets left: " + (MaxBullets - bullet.size()), 20, 650);
-		}
-		if (showLog) {
-		g.drawString("speed of bullets "+ speedBullets, 20, 100);
-		g.drawString("max num of aliens "+ MaxAliens, 20, 150);
-		g.drawString("Ship speed "+ speedShip, 20, 200);
-		g.drawString("Aliens speed "+ speedAliens, 20, 250);
-		g.drawString("numOfrails "+ numOfRails, 20, 300);
-	
-		}
 		ship.paint(g);
 		for(int i=0;i<bullet.size();i++)
 			bullet.get(i).paint(g);
@@ -223,14 +218,13 @@ public class Game {
 			g.drawString("Level: " + (level), 20, 550);
 			g.drawString("time left: " + (-Now + timeOfLastLevel + durationOfLevel), 20, 600);
 			g.drawString("❤️ : " + lives, 20, 520);
-			g.drawString("bullets left: " + (MaxBullets - bullet.size()), 20, 650);
 		}
 		if (showLog) {
 		g.drawString("speed of bullets "+ speedBullets, 20, 100);
 		g.drawString("max num of aliens "+ MaxAliens, 20, 150);
 		g.drawString("Ship speed "+ speedShip, 20, 200);
 		g.drawString("Aliens speed "+ speedAliens, 20, 250);
-		g.drawString("numOfrails "+ numOfRails, 20, 300);
+		g.drawString("numOfAliens per column"+ numOfAliensPerColumn , 20, 300);
 	
 		}
 		ship.paint(g);

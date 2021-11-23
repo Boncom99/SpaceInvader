@@ -17,7 +17,6 @@ public class Aliens extends MovingObject{
 		void paintAlien(Graphics g){
 		g.setColor(new Color(235, 223, 100)); //groc
 		int w = (width / totalLives) * (totalLives - lives);
-		System.out.println(w);
 		g.fillRect(x, y,w,height);
 		//g.setColor(c);
 		g.setColor( new Color(219, 85, 221)); //magenta

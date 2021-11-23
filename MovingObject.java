@@ -20,7 +20,7 @@ public abstract class MovingObject{
 
 	}
     boolean IsOutOfRange(int w_width, int w_height) {
-		if (x < 0 || x > w_width || y < 0 || y >w_height) {
+		if (x < 0 || x > w_width || y < 0 || y+height >w_height) {
 			return true;
 		}
 			return false;

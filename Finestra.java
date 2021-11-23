@@ -9,9 +9,9 @@ import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
 
 public class Finestra extends Frame implements KeyListener, WindowListener {
-	Game j;
+	Game game;
 
-	int WIDTH=1000,HEIGHT=800;
+	int WIDTH=1600,HEIGHT=800;
     List<Integer> keys=new ArrayList<Integer>();	
 	//T�cnica de double buffer
 	Image im;
@@ -28,22 +28,20 @@ public class Finestra extends Frame implements KeyListener, WindowListener {
 		addWindowListener(this);
 		im=this.createImage(WIDTH, HEIGHT);
 		g=im.getGraphics();
-		j=new Game(this);
-		j.run();
+		game=new Game(this);
+		game.run();
 	}
 
 	public void update(Graphics g) {
 		if(keys.contains(KeyEvent.VK_DOWN)){
-			j.move(1);
+			game.move(1);
 		}
 		if (keys.contains(KeyEvent.VK_UP)) {
-			j.move(-1);
+			game.move(-1);
 		}
 		if(keys.contains(KeyEvent.VK_SPACE)){
-			j.shoot();
+			game.shoot();
 		}
-
-
 		paint(g);
 	}
 	public void paint(Graphics g) {
