@@ -4,14 +4,26 @@ import java.awt.Graphics;
 public class Aliens extends MovingObject{
 	int totalLives;
 	int lives;
+	int moves;
+	int direction;
+	int verticalSpeed;
 	@Override
 	void move() {
 		x-=speed;
 	}
-	Aliens(int x,int y,int width, int height , int speed,Color c, int totalLives ) {
+
+	void moveVertical() {
+		y+=verticalSpeed* direction;
+		moves++;
+	}
+	Aliens(int x,int y,int width, int height , int speed,Color c, int totalLives , int totalMovesVertical) {
 		super(x, y,width,height, speed, c);
 		this.totalLives = totalLives;
 		this.lives = totalLives;
+		direction = 1;
+		moves = totalMovesVertical/2;
+		verticalSpeed = 1;
+	
 		}
 
 		void paintAlien(Graphics g){

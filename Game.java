@@ -17,12 +17,20 @@ public class Game {
 	//Aliens
 	List<Aliens> aliens= new ArrayList<Aliens>();
 	Color aliensColor;
-	int speedAliens=1;
+	int speedAliens=30;
 	int MaxAliens= 25;
-	int AliensLives = 1;
-	long durationOfAliens= 2000;
-	long timeOfLastAliens= 0;
-	int AliensHeight=20;
+	int AliensLives = 2;
+	int AliensHeight=15;
+	int AliensWidth=30;
+	int numOfAliensPerColumn =20;
+	int numOfAliensPerRow =10;
+	int marginV = 10;
+	int marginH = 10;
+	int marginTop =50;
+	int marginBottom=50;
+	int initialX;
+	int initialY;
+	int totalMovesVertical = 260;
 	
 	//Ship
 	Color shipColor;
@@ -42,7 +50,6 @@ public class Game {
 	Color backgroundColor= new Color(0,0 , 0);
 	Color groundColor= new Color(98, 222, 109);
 	Finestra f;
-	int numOfAliensPerColumn;
 	Random r=new Random();
 	Game(Finestra f) {
 		this.f=f;
@@ -79,8 +86,9 @@ public class Game {
 	void GenerateAliens() {
 
 		for (int i = 0; i < numOfAliensPerColumn; i++) {
-
-			aliens.add(new Aliens(f.WIDTH-40,5*AliensHeight+ AliensHeight*i,80,AliensHeight, speedAliens, aliensColor,AliensLives));
+			for (int j = 0; j < numOfAliensPerRow; j++) {
+			aliens.add(new Aliens(initialX+ j*(AliensWidth+marginH),initialY+i*(AliensHeight+marginV),AliensWidth,AliensHeight, speedAliens, aliensColor,AliensLives, totalMovesVertical));
+			}
 		}
 
 	}
@@ -105,30 +113,26 @@ public class Game {
 
 	void run() {
 		initialize();
+		GenerateAliens();
 		while (!gameOver()) {
-			NumOfFrames++;
-		long Now = System.currentTimeMillis();
-			if ((Now - timeOfLastLevel) > durationOfLevel) {
+			if ( aliens.size()==0) {
 				level++;
 				updateVarsOnLevelChange();
-  			  	timeOfLastLevel = Now;
-			}
-			if (NumOfFrames>250) {
-				NumOfFrames = 0;
+				try {
+				Thread.sleep(500);
+				} catch (InterruptedException e) {
+				e.printStackTrace();
+				}
 				GenerateAliens();
-  			  	timeOfLastAliens = Now;
 			}
-
-
 			impacts();
 			moveAliens();
 			moveBullets();
-			rePaint(Now);
+			rePaint();
 			f.repaint();
 			try {
 				Thread.sleep(15);
 			} catch (InterruptedException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 		}
@@ -143,16 +147,26 @@ public class Game {
 		aliensColor = new Color(0, 255, 10);
 		bulletColor = new Color(248, 59, 58);
 
-	numOfAliensPerColumn = f.HEIGHT / (AliensHeight + 4) -10;
 		ship = new Ship(X,f.HEIGHT / 2,25,100,speedShip, shipColor);
+	 	initialX = (f.WIDTH- (AliensWidth+marginH)* numOfAliensPerRow)/2;
+		initialY = (f.HEIGHT- (AliensHeight+marginV)* numOfAliensPerColumn)/2;
+	
+
 	}
 	void moveAliens() {
+	
 		for(int i=0;i<aliens.size();i++){
-			aliens.get(i).move();
-			if (aliens.get(i).IsOutOfRange(f.WIDTH,f.HEIGHT)) {
+			if (aliens.get(i).moves > totalMovesVertical) {
+				aliens.get(i).moves = 0;
+				aliens.get(i).direction *= -1;
+				aliens.get(i).move();
+			}
+			
+			aliens.get(i).moveVertical();
+			/*if (aliens.get(i).IsOutOfRange(f.WIDTH,f.HEIGHT)) {
 				deleteAliens(i);
 				lives--;
-			}
+			}*/
 		}
 	}
 	void moveBullets() {
@@ -171,7 +185,7 @@ public class Game {
 		List<Aliens> foundA = new ArrayList<Aliens>();
 		for (Bullet b : bullet) {
 			for (Aliens a : aliens) {
-				if ((a.x <= b.x + b.width) && (a.y <= b.y && b.y <= a.y + a.height)) {
+				if ((a.x <= b.x + b.width && b.x + b.width <=a.x+a.width) && (a.y <= b.y && b.y <= a.y + a.height)) {
 					if (a.lives == 1) {
 					foundA.add(a);
 					}
@@ -207,7 +221,7 @@ public class Game {
 		g.setColor(Color.BLACK);
 		g.drawString("GAME OVER ", f.WIDTH/2, f.HEIGHT/2);
 	}
-		void rePaint(long Now) {
+		void rePaint() {
 		g.setColor(backgroundColor);
 		g.fillRect(0, 0, f.WIDTH, f.HEIGHT);
 		g.setColor(groundColor);
@@ -216,7 +230,6 @@ public class Game {
 		if (showInfo) {
 			g.drawString("Score: " + score, 20, 500);
 			g.drawString("Level: " + (level), 20, 550);
-			g.drawString("time left: " + (-Now + timeOfLastLevel + durationOfLevel), 20, 600);
 			g.drawString("❤️ : " + lives, 20, 520);
 		}
 		if (showLog) {
