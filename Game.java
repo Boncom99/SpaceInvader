@@ -30,7 +30,7 @@ public class Game {
 	int marginBottom=50;
 	int initialX;
 	int initialY;
-	int totalMovesVertical = 260;
+	int totalMovesVertical ;
 	
 	//Ship
 	Color shipColor;
@@ -150,6 +150,7 @@ public class Game {
 		ship = new Ship(X,f.HEIGHT / 2,25,100,speedShip, shipColor);
 	 	initialX = (f.WIDTH- (AliensWidth+marginH)* numOfAliensPerRow)/2;
 		initialY = (f.HEIGHT- (AliensHeight+marginV)* numOfAliensPerColumn)/2;
+		totalMovesVertical = initialY * 2 -10;
 	
 
 	}
