@@ -56,7 +56,7 @@ public class Game {
 	int score = 0;
 	long durationOfLevel = 30000;
 	long timeOfLastLevel= 0;
-	int X=70;
+	int X=50;
 	Graphics g;
 	Color textColor= new Color(255,255 , 255);
 	Color backgroundColor= new Color(0,0 , 0);
@@ -75,10 +75,10 @@ public class Game {
 		bulletColor = new Color(248, 59, 58);
 		wallColor= new Color (98, 222, 109);
 
-		ship = new Ship(X,f.HEIGHT / 2,20,50,speedShip, shipColor);
+		ship = new Ship(X,f.HEIGHT / 2,20,45,speedShip, shipColor);
 
 		//Aliens position
-	 	initialX = (f.WIDTH- (AliensWidth+marginH)* numOfAliensPerRow)/2;
+	 	initialX = 2*(f.WIDTH- (AliensWidth+marginH)* numOfAliensPerRow)/3;
 		initialY = (f.HEIGHT- (AliensHeight+marginV)* numOfAliensPerColumn)/2;
 		//Start Button position
 		Sx = f.WIDTH / 2 - 200;
@@ -87,7 +87,7 @@ public class Game {
 		SH = 100;
 		//Wall
 		//
-		totalMovesVertical = initialY * 2 -10;
+		totalMovesVertical = initialY * 2 -12;
 
 	
 
@@ -111,15 +111,15 @@ public class Game {
 		return false;
 	}
 	void start(int x, int y) {
-		if ((x > Sx && x < Sx + SW) && (y > Sy && y < Sy + SH)) {
+		if ((x >= Sx && x <= Sx + SW) && (y >= Sy && y <= Sy + SH)) {
 			gameStart = true;
 		}
 	}
 
 	void GenerateWall() {
-		walls.add(new Wall(200, 150, 20, 10, wallColor));
-		walls.add(new Wall(200, 350, 20, 10, wallColor));
-		walls.add(new Wall(200, 600, 20, 10, wallColor));
+		walls.add(new Wall(X+50, 100, 20, 6, wallColor));
+		walls.add(new Wall(X+50, 250, 20, 6, wallColor));
+		walls.add(new Wall(X+50, 450, 20, 6, wallColor));
 	}
 	
 	void GenerateAliens() {
@@ -203,7 +203,7 @@ public class Game {
 			rePaint();
 			f.repaint();
 			try {
-				Thread.sleep(15);
+				Thread.sleep(25);
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			}
@@ -309,6 +309,7 @@ public class Game {
 			aliens.get(i).paintAlien(g);
 		g.setColor(new Color(66, 233, 244));
 		g.drawString("SPACE INVADERS", f.WIDTH/2-400, f.HEIGHT/2);
+		g.fillRect(Sx, Sy, SW, SH);
 		g.setColor(new Color(235, 223, 100));
 		g.drawString("START", Sx, Sy+100);
 
@@ -334,10 +335,10 @@ public class Game {
 		g.fillRect(0, 0, f.WIDTH, f.HEIGHT);
 		g.setColor(textColor);
 		if (showInfo) {
-			int x=f.WIDTH-400;
-			g.drawString("SCORE: " + score, x, 600);
-			g.drawString("LEVEL: " + (level), x, 650);
-			g.drawString("LIVES : " + lives, x, 700);
+			int x=f.WIDTH-150;
+			g.drawString("SCORE: " + score, x, 400);
+			g.drawString("LEVEL: " + (level), x, 450);
+			g.drawString("LIVES : " + lives, x, 500);
 		}
 
 		ship.paint(g);

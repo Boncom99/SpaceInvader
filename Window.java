@@ -20,7 +20,7 @@ import java.util.List;
 public class Window extends Frame implements KeyListener, WindowListener, MouseListener{
 	Game game;
 
-	int WIDTH=1600,HEIGHT=800;
+	int WIDTH=800,HEIGHT=600;
     List<Integer> keys=new ArrayList<Integer>();	
 	//T�cnica de double buffer
 	Image im;
@@ -39,7 +39,7 @@ public class Window extends Frame implements KeyListener, WindowListener, MouseL
 		try{
 
 		MainFont = Font.createFont(Font.TRUETYPE_FONT, new File ("ARCADE.TTF"));
-		 smallFont=MainFont.deriveFont(40f);
+		 smallFont=MainFont.deriveFont(30f);
 		 BigFont=MainFont.deriveFont(100f);
 		}
 		catch (IOException|FontFormatException e) {
