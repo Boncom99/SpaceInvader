@@ -36,7 +36,12 @@ public class Game {
 	int numsOfGuns=1;
 	int speedShip=7;
 	Ship ship;
-	
+
+	//StartButton;
+	int Sx;
+	int SW;
+	int Sy;
+	int SH;
 	//Game
 	boolean gameStart=false;
 	long TimeStart = 0;
@@ -95,6 +100,12 @@ public class Game {
 	}
 	void deleteBullet( int i) {
 		bullet.remove(i);
+	}
+
+	void start(int x, int y) {
+		if ((x > Sx && x < Sx + SW) && (y > Sy && y < Sy + SH)) {
+			gameStart = true;
+		}
 	}
 
 	void deleteAliens(int i) {
@@ -184,6 +195,12 @@ public class Game {
 		ship = new Ship(X,f.HEIGHT / 2,25,100,speedShip, shipColor);
 	 	initialX = (f.WIDTH- (AliensWidth+marginH)* numOfAliensPerRow)/2;
 		initialY = (f.HEIGHT- (AliensHeight+marginV)* numOfAliensPerColumn)/2;
+		//Start Button position
+		Sx = f.WIDTH / 2 - 200;
+		Sy = 3*f.HEIGHT / 4 - 50;
+		SW = 250;
+		SH = 100;
+		//
 		totalMovesVertical = initialY * 2 -10;
 	
 
@@ -252,6 +269,9 @@ void rePaintStart() {
 			aliens.get(i).paintAlien(g);
 		g.setColor(new Color(66, 233, 244));
 		g.drawString("SPACE INVADERS", f.WIDTH/2-400, f.HEIGHT/2);
+		g.setColor(new Color(235, 223, 100));
+		g.drawString("START", Sx, Sy+100);
+
 	}
 	void rePaintEND() {
 		g.setFont(f.BigFont);

@@ -3,8 +3,13 @@ import java.awt.FontFormatException;
 import java.awt.Frame;
 import java.awt.Graphics;
 import java.awt.Image;
+import java.awt.Point;
+import java.awt.PointerInfo;
+import java.awt.MouseInfo;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
 import java.io.File;
@@ -12,7 +17,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Finestra extends Frame implements KeyListener, WindowListener {
+public class Finestra extends Frame implements KeyListener, WindowListener, MouseListener{
 	Game game;
 
 	int WIDTH=1600,HEIGHT=800;
@@ -23,6 +28,7 @@ public class Finestra extends Frame implements KeyListener, WindowListener {
 	Font MainFont;
 	Font smallFont;
 	Font BigFont;
+	File file = new File("background.bmp");
 
 	public static void main(String[] args) {
 		new Finestra();
@@ -33,7 +39,7 @@ public class Finestra extends Frame implements KeyListener, WindowListener {
 		try{
 
 		MainFont = Font.createFont(Font.TRUETYPE_FONT, new File ("ARCADE.TTF"));
-		 smallFont=MainFont.deriveFont(20f);
+		 smallFont=MainFont.deriveFont(40f);
 		 BigFont=MainFont.deriveFont(100f);
 		}
 		catch (IOException|FontFormatException e) {
@@ -44,6 +50,7 @@ public class Finestra extends Frame implements KeyListener, WindowListener {
 		setVisible(true);
 		this.addKeyListener(this);
 		addWindowListener(this);
+		addMouseListener(this);
 		im=this.createImage(WIDTH, HEIGHT);
 		g=im.getGraphics();
 		game=new Game(this);
@@ -65,8 +72,46 @@ public class Finestra extends Frame implements KeyListener, WindowListener {
 	public void paint(Graphics g) {
 		g.drawImage(im,0,0,null);
 	}
-
+ void checkmouse(){
+    PointerInfo a = MouseInfo.getPointerInfo();
+    Point b = a.getLocation();
+    int x = (int) b.getX();
+    int y = (int) b.getY();
+	game.start(x, y);
+    }
 	
+
+
+	@Override
+	public void mouseClicked(MouseEvent e) {
+		checkmouse();
+		
+	}
+
+	@Override
+	public void mouseEntered(MouseEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void mouseExited(MouseEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void mousePressed(MouseEvent e) {
+
+
+		
+	}
+
+	@Override
+	public void mouseReleased(MouseEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
 
 	@Override
 	public void keyReleased(KeyEvent e) {
