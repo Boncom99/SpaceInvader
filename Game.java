@@ -52,7 +52,7 @@ public class Game {
 	int randZERO_ONE = 1;
 	int level=0;
 	long NumOfFrames=0;
-	int lives=50;
+	int lives=3;
 	int score = 0;
 	long durationOfLevel = 30000;
 	long timeOfLastLevel= 0;
@@ -308,8 +308,8 @@ public class Game {
 		for(int i=0;i<aliens.size();i++)
 			aliens.get(i).paintAlien(g);
 		g.setColor(new Color(66, 233, 244));
-		g.drawString("SPACE INVADERS", f.WIDTH/2-400, f.HEIGHT/2);
-		g.fillRect(Sx, Sy, SW, SH);
+		g.drawString("SPACE INVADERS", f.WIDTH/2-350, f.HEIGHT/2);
+		//g.fillRect(Sx, Sy, SW, SH);
 		g.setColor(new Color(235, 223, 100));
 		g.drawString("START", Sx, Sy+100);
 
@@ -325,14 +325,16 @@ public class Game {
 		for(int i=0;i<aliens.size();i++)
 			aliens.get(i).paintAlien(g);
 		g.setColor(new Color(66, 233, 244));
-		g.fillRect(f.WIDTH/4, f.HEIGHT/4, 2*(f.WIDTH/4), 2*(f.HEIGHT/4));
-		g.setColor(Color.BLACK);
-		g.drawString("GAME OVER ", f.WIDTH/2, f.HEIGHT/2);
+		g.drawString("SPACE INVADERS", f.WIDTH/2-350, f.HEIGHT/2-100);
+		g.setColor(new Color(235, 223, 100));
+		g.drawString("GAME OVER ", f.WIDTH/2-200, f.HEIGHT/2+200);
 	}
 	void rePaint() {
 		g.setFont(f.smallFont);
 		g.setColor(backgroundColor);
 		g.fillRect(0, 0, f.WIDTH, f.HEIGHT);
+		g.setColor(new Color(66, 233, 244));
+		g.drawString("SPACE INVADERS", 550, 100);
 		g.setColor(textColor);
 		if (showInfo) {
 			int x=f.WIDTH-150;
