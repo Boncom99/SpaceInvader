@@ -18,8 +18,7 @@ public class Game {
 	List<Aliens> aliens= new ArrayList<Aliens>();
 	Color aliensColor;
 	int speedAliens=30;
-	int MaxAliens= 25;
-	int AliensLives = 2;
+	int AliensLives = 4;
 	int AliensHeight=15;
 	int AliensWidth=30;
 	int numOfAliensPerColumn =20;
@@ -38,6 +37,10 @@ public class Game {
 	int speedShip=7;
 	Ship ship;
 	
+	//Game
+	boolean gameStart=false;
+	long TimeStart = 0;
+	int randZERO_ONE = 1;
 	int level=0;
 	long NumOfFrames=0;
 	int lives=50;
@@ -57,19 +60,17 @@ public class Game {
 	}
 
 	void updateVarsOnLevelChange() {
-		MaxAliens+=  10;
 		lives+= 2 ;
 		bulletPower += 1;
 		AliensLives += 2;
 		timeDelayBullet -=  2;
-		durationOfLevel += level * 400;
-		speedAliens += 1;
 		speedShip+= 1;
 		speedBullets+= 2;
 			numsOfGuns +=1;
 
 
 	}
+		
 	boolean gameOver() {
 		if (lives <= 0) {
 			return true;
@@ -110,11 +111,44 @@ public class Game {
 			}
 	}
 
+	void randomMove() {
+		shoot();
+		long timeNow = System.currentTimeMillis();
+		long time = timeNow - TimeStart;
+		if (time < 0 || time > 200) {
+			TimeStart = timeNow;
+			randZERO_ONE = Math.abs(r.nextInt()) % 2 - 1;
+			if (randZERO_ONE == 0) {
+				randZERO_ONE = 1;
+			}
+		}
+		move(randZERO_ONE);
+		impacts();
+		moveAliens();
+		moveBullets();
+}
 
 	void run() {
+
 		initialize();
+
 		GenerateAliens();
-		while (!gameOver()) {
+		while (!gameStart) {
+			numsOfGuns = 2;
+			rePaintStart();
+			f.repaint();
+			randomMove();
+			try {
+				Thread.sleep(15);
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+		
+		}
+		numsOfGuns = 1;
+		aliens.clear();
+		GenerateAliens();
+		while (!gameOver()&& gameStart) {
 			if ( aliens.size()==0) {
 				level++;
 				updateVarsOnLevelChange();
@@ -205,8 +239,22 @@ public class Game {
 		}
 
 	}
-
+void rePaintStart() {
+		g.setFont(f.BigFont);
+		g.setColor(backgroundColor);
+		g.fillRect(0, 0, f.WIDTH, f.HEIGHT);
+		g.setColor(groundColor);
+		g.fillRect(0, 0, X-10, f.HEIGHT);
+		ship.paint(g);
+		for(int i=0;i<bullet.size();i++)
+			bullet.get(i).paint(g);
+		for(int i=0;i<aliens.size();i++)
+			aliens.get(i).paintAlien(g);
+		g.setColor(new Color(66, 233, 244));
+		g.drawString("SPACE INVADERS", f.WIDTH/2-400, f.HEIGHT/2);
+	}
 	void rePaintEND() {
+		g.setFont(f.BigFont);
 		g.setColor(backgroundColor);
 		g.fillRect(0, 0, f.WIDTH, f.HEIGHT);
 		g.setColor(groundColor);
@@ -223,6 +271,7 @@ public class Game {
 		g.drawString("GAME OVER ", f.WIDTH/2, f.HEIGHT/2);
 	}
 		void rePaint() {
+		g.setFont(f.smallFont);
 		g.setColor(backgroundColor);
 		g.fillRect(0, 0, f.WIDTH, f.HEIGHT);
 		g.setColor(groundColor);
@@ -235,7 +284,6 @@ public class Game {
 		}
 		if (showLog) {
 		g.drawString("speed of bullets "+ speedBullets, 20, 100);
-		g.drawString("max num of aliens "+ MaxAliens, 20, 150);
 		g.drawString("Ship speed "+ speedShip, 20, 200);
 		g.drawString("Aliens speed "+ speedAliens, 20, 250);
 		g.drawString("numOfAliens per column"+ numOfAliensPerColumn , 20, 300);
