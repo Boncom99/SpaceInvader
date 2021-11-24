@@ -17,13 +17,13 @@ public class Game {
 	List<Alien> aliens= new ArrayList<Alien>();
 	Color aliensColor;
 	int speedAliens=30;
-	int AliensLives = 4;
-	int AliensHeight=15;
-	int AliensWidth=30;
-	int numOfAliensPerColumn =20;
-	int numOfAliensPerRow =10;
-	int marginV = 10;
-	int marginH = 10;
+	int AliensLives = 2;
+	int AliensHeight=30;
+	int AliensWidth=15;
+	int numOfAliensPerColumn =10;
+	int numOfAliensPerRow =5;
+	int marginV = 8;
+	int marginH = 20;
 	int marginTop =50;
 	int marginBottom=50;
 	int initialX;
@@ -33,7 +33,7 @@ public class Game {
 	//Ship
 	Color shipColor;
 	int numsOfGuns=1;
-	int speedShip=7;
+	int speedShip=4;
 	Ship ship;
 
 	//Wall
@@ -61,9 +61,9 @@ public class Game {
 	Color textColor= new Color(255,255 , 255);
 	Color backgroundColor= new Color(0,0 , 0);
 	Color groundColor= new Color(98, 222, 109);
-	Finestra f;
+	Window f;
 	Random r=new Random();
-	Game(Finestra f) {
+	Game(Window f) {
 		this.f=f;
 		this.g=f.g;
 	}
@@ -75,7 +75,7 @@ public class Game {
 		bulletColor = new Color(248, 59, 58);
 		wallColor= new Color (98, 222, 109);
 
-		ship = new Ship(X,f.HEIGHT / 2,25,100,speedShip, shipColor);
+		ship = new Ship(X,f.HEIGHT / 2,20,50,speedShip, shipColor);
 
 		//Aliens position
 	 	initialX = (f.WIDTH- (AliensWidth+marginH)* numOfAliensPerRow)/2;
@@ -117,9 +117,9 @@ public class Game {
 	}
 
 	void GenerateWall() {
-		walls.add(new Wall(200, 150, 3, 10, wallColor));
-		walls.add(new Wall(200, 350, 3, 10, wallColor));
-		walls.add(new Wall(200, 600, 3, 10, wallColor));
+		walls.add(new Wall(200, 150, 20, 10, wallColor));
+		walls.add(new Wall(200, 350, 20, 10, wallColor));
+		walls.add(new Wall(200, 600, 20, 10, wallColor));
 	}
 	
 	void GenerateAliens() {
@@ -136,21 +136,17 @@ public class Game {
 	
 
 	void shoot() {
-		long timeNow = System.currentTimeMillis();
-		long time = timeNow - timeOfLastProjectile;
-			if (time < 0 || time > timeDelayBullet) {
-  			  	timeOfLastProjectile = timeNow;
-				for (int i = 1; i < numsOfGuns+1; i++) {
-				bullets.add(new Bullet(ship.x+ship.width, ship.y+i*ship.height/(numsOfGuns+1),8,3, speedBullets, bulletColor));
-				}
-			}
+		for (int i = 1; i < numsOfGuns+1; i++) {
+		bullets.add(new Bullet(ship.x+ship.width, ship.y+i*ship.height/(numsOfGuns+1),8,3, speedBullets, bulletColor));
+		}
 	}
 
 	void randomMove() {
-		shoot();
+
 		long timeNow = System.currentTimeMillis();
 		long time = timeNow - TimeStart;
 		if (time < 0 || time > 200) {
+			shoot();
 			TimeStart = timeNow;
 			randZERO_ONE = Math.abs(r.nextInt()) % 2 - 1;
 			if (randZERO_ONE == 0) {
@@ -259,7 +255,7 @@ public class Game {
 				List<Brick> foundBricks = new ArrayList<Brick>();
 				for (Bullet b : bullets) {
 					for (Brick a : walls.get(i).bricks) {
-						if ((a.x <= b.x + b.width && b.x + b.width <= a.x + a.width)
+						if ((a.x <= b.x + b.width )
 								&& (a.y <= b.y && b.y <= a.y + a.height)) {
 								foundBricks.add(a);
 							foundBullets.add(b);

@@ -16,10 +16,12 @@ public class Wall {
 		this.width = width;
 		this.height = height;
 		this.c = c;
+		int h=10;
+		int w=1;
 		bricks =new ArrayList<Brick>();
 		for (int i = 0; i < width; i++) {
 			for (int j = 0; j < height; j++) {
-			bricks.add(new Brick(x+i*10,y+ j*10,10,10, c));
+			bricks.add(new Brick(x+i*w,y+ j*h,w,h, c));
 			}
 		}
 

@@ -17,7 +17,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Finestra extends Frame implements KeyListener, WindowListener, MouseListener{
+public class Window extends Frame implements KeyListener, WindowListener, MouseListener{
 	Game game;
 
 	int WIDTH=1600,HEIGHT=800;
@@ -31,10 +31,10 @@ public class Finestra extends Frame implements KeyListener, WindowListener, Mous
 	File file = new File("background.bmp");
 
 	public static void main(String[] args) {
-		new Finestra();
+		new Window();
 	}
 	
-	Finestra() {
+	Window() {
 		super("Space Invader");
 		try{
 
@@ -64,9 +64,9 @@ public class Finestra extends Frame implements KeyListener, WindowListener, Mous
 		if (keys.contains(KeyEvent.VK_UP)) {
 			game.move(-1);
 		}
-		if(keys.contains(KeyEvent.VK_SPACE)){
+		/*if(keys.contains(KeyEvent.VK_SPACE)){
 			game.shoot();
-		}
+		}*/
 		paint(g);
 	}
 	public void paint(Graphics g) {
@@ -119,6 +119,8 @@ public class Finestra extends Frame implements KeyListener, WindowListener, Mous
  	if(keys.contains(e.getKeyCode())){
         keys.remove(keys.indexOf(e.getKeyCode()));
     }	
+	if(e.getKeyCode()==KeyEvent.VK_SPACE)
+		game.shoot();
 	}
 
 	@Override
