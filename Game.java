@@ -15,12 +15,15 @@ public class Game {
 	int bulletPower = 1;
 	//Aliens
 	List<Alien> aliens= new ArrayList<Alien>();
+	List<Bullet> bulletsAliens = new ArrayList<Bullet>();
 	Color aliensColor;
+	int ShootingRate=800;
+	int speedBulletsAlien=5;
 	int speedAliens=30;
 	int AliensLives = 2;
 	int AliensHeight=30;
 	int AliensWidth=15;
-	int numOfAliensPerColumn =10;
+	int numOfAliensPerColumn = 10;
 	int numOfAliensPerRow =5;
 	int marginV = 8;
 	int marginH = 20;
@@ -52,7 +55,7 @@ public class Game {
 	int randZERO_ONE = 1;
 	int level=0;
 	long NumOfFrames=0;
-	int lives=3;
+	int lives=15;
 	int score = 0;
 	long durationOfLevel = 30000;
 	long timeOfLastLevel= 0;
@@ -94,13 +97,17 @@ public class Game {
 	}
 
 	void updateVarsOnLevelChange() {
-		lives+= 2 ;
+		lives= 3 ;
 		bulletPower += 1;
 		AliensLives += 1;
 		timeDelayBullet -=  1;
 		speedShip+= 1;
-		speedBullets+= 2;
-			numsOfGuns +=1;
+		speedBullets+= 1;
+		speedBulletsAlien += 1;
+		ShootingRate += -50;
+		if (numsOfGuns < 3) {
+		numsOfGuns +=1;
+		}
 
 
 	}
@@ -117,9 +124,9 @@ public class Game {
 	}
 
 	void GenerateWall() {
-		walls.add(new Wall(X+50, 100, 20, 6, wallColor));
-		walls.add(new Wall(X+50, 250, 20, 6, wallColor));
-		walls.add(new Wall(X+50, 450, 20, 6, wallColor));
+		walls.add(new Wall(X+50, 100, 5, 6, wallColor));
+		walls.add(new Wall(X+50, 250, 5, 6, wallColor));
+		walls.add(new Wall(X+50, 450, 5, 6, wallColor));
 	}
 	
 	void GenerateAliens() {
@@ -137,8 +144,11 @@ public class Game {
 
 	void shoot() {
 		for (int i = 1; i < numsOfGuns+1; i++) {
-		bullets.add(new Bullet(ship.x+ship.width, ship.y+i*ship.height/(numsOfGuns+1),8,3, speedBullets, bulletColor));
+		bullets.add(new Bullet(ship.x+ship.width, ship.y+i*ship.height/(numsOfGuns+1),8,4, speedBullets, bulletColor, 1));
 		}
+	}
+	void aliensShoot(Alien a) {
+		bulletsAliens.add(new Bullet(a.x+a.width, a.y+ship.height/2,8,4, speedBulletsAlien, (Color.ORANGE),-1));
 	}
 
 	void randomMove() {
@@ -154,7 +164,7 @@ public class Game {
 			}
 		}
 		move(randZERO_ONE);
-		impacts();
+		impactsShip();
 		moveAliens();
 		moveBullets();
 	}
@@ -185,6 +195,7 @@ public class Game {
 			if ( aliens.size()==0) {
 				level++;
 				bullets.clear();
+				bulletsAliens.clear();
 				walls.clear();
 
 				try {
@@ -196,8 +207,19 @@ public class Game {
 				GenerateAliens();
 				GenerateWall();
 			}
-			impacts();
+			impactBullets();
+			impactsShip();
 			wallImpacts();
+			impactAlien();
+			long timeNow = System.currentTimeMillis();
+			long time = timeNow - TimeStart;
+			if (time < 0 || time > ShootingRate) {
+				TimeStart = timeNow;
+				if(aliens.size()>0){
+					int a = Math.abs(r.nextInt()) % (aliens.size());
+					aliensShoot(aliens.get(a));
+				}
+			}
 			moveAliens();
 			moveBullets();
 			rePaint();
@@ -238,65 +260,114 @@ public class Game {
 			}
 		}
 	}
+
 	void moveBullets() {
-		for(int i=0;i<bullets.size();i++){
+		for (int i = 0; i < bullets.size(); i++) {
 			bullets.get(i).move();
 			if (bullets.get(i).IsOutOfRange(f.WIDTH, f.HEIGHT)) {
 				bullets.remove(i);
 			}
 		}
+		for (int i = 0; i < bulletsAliens.size(); i++) {
+			bulletsAliens.get(i).move();
+			if (bulletsAliens.get(i).IsOutOfRange(f.WIDTH, f.HEIGHT)) {
+				bulletsAliens.remove(i);
+			}
+		}
 	}
+//IMPACTS
 	void wallImpacts() {
 		for (int i = 0; i < walls.size(); i++) {
 			
 			if (bullets.size() > 0 && walls.get(i).bricks.size() > 0) {
 
 				List<Bullet> foundBullets = new ArrayList<Bullet>();
-				List<Brick> foundBricks = new ArrayList<Brick>();
 				for (Bullet b : bullets) {
 					for (Brick a : walls.get(i).bricks) {
 						if ((a.x <= b.x + b.width )
-								&& (a.y <= b.y && b.y <= a.y + a.height)) {
-								foundBricks.add(a);
-							foundBullets.add(b);
+								&& (a.y <= b.y+b.height && b.y <= a.y + a.height)) {
+								walls.get(i).bricks.remove(a);
+								foundBullets.add(b);
+								break;
 						}
 					}
 				}
 				bullets.removeAll(foundBullets);
-				walls.get(i).bricks.removeAll(foundBricks);
 				foundBullets = null;
-				foundBricks= null;
+			}
+			if (bulletsAliens.size() > 0 && walls.get(i).bricks.size() > 0) {
+
+				List<Bullet> foundBullets = new ArrayList<Bullet>();
+				for (Bullet b : bulletsAliens) {
+					for (Brick a : walls.get(i).bricks) {
+						if ((a.x >= b.x )&& (a.y <= b.y+b.height && b.y <= a.y + a.height)) {
+							walls.get(i).bricks.remove(a);
+							foundBullets.add(b);
+							break;
+						}
+					}
+				}
+				bulletsAliens.removeAll(foundBullets);
+				foundBullets = null;
 			}
 		}
 
 	}
-	void impacts() {
+
+	void impactAlien() {
+			List<Bullet> foundB = new ArrayList<Bullet>();
+		for (Bullet b : bulletsAliens) {
+			if (ship.x <= b.x  && b.x  <= ship.x + ship.width   && (ship.y <= b.y+b.height && b.y <= ship.y + ship.height)){
+				foundB.add(b);
+				lives--;
+			}
+		}
+		bulletsAliens.removeAll(foundB);
+		foundB = null;
+	
+
+	}
+	void impactsShip() {
 		if (bullets.size() > 0 && aliens.size() > 0) {
 
 			List<Bullet> foundB = new ArrayList<Bullet>();
-			List<Alien> foundA = new ArrayList<Alien>();
 			for (Bullet b : bullets) {
 				for (Alien a : aliens) {
 					if ((a.x <= b.x + b.width && b.x + b.width <= a.x + a.width)
-							&& (a.y <= b.y && b.y <= a.y + a.height)) {
-						if (a.lives == 1) {
-							foundA.add(a);
+							&& (a.y <= b.y+b.height && b.y <= a.y + a.height)) {
+						if (a.lives <= 1) {
+							aliens.remove(a);
 						} else {
 							a.lives--;
 						}
 						foundB.add(b);
 						score++;
+						break;
 					}
 				}
 			}
 			bullets.removeAll(foundB);
-			aliens.removeAll(foundA);
-			foundA = null;
 			foundB = null;
 		}
 
 	}
+void impactBullets() {
+		if (bullets.size() > 0 && bulletsAliens.size() > 0) {
+			List<Bullet> foundB = new ArrayList<Bullet>();
+			for (Bullet b : bullets) {
+				for (Bullet a : bulletsAliens) {
+					if ((a.x >= b.x  && b.x + b.width+2 >= a.x )
+							&& (a.y+a.height >= b.y && a.y <= b.y + b.height)) {
+						foundB.add(b);
+						bulletsAliens.remove(a);
+						break;
+					}
+				}
+			}
+			bullets.removeAll(foundB);
+		}
 
+	}
 //PAINTING
 	void rePaintStart() {
 		g.setFont(f.BigFont);
@@ -345,6 +416,9 @@ public class Game {
 
 		ship.paint(g);
 		for (Bullet bullet:bullets) {
+			bullet.paint(g);
+		}
+		for (Bullet bullet:bulletsAliens) {
 			bullet.paint(g);
 		}
 		for (Alien alien : aliens) {

@@ -17,7 +17,7 @@ public class Wall {
 		this.height = height;
 		this.c = c;
 		int h=10;
-		int w=1;
+		int w=4;
 		bricks =new ArrayList<Brick>();
 		for (int i = 0; i < width; i++) {
 			for (int j = 0; j < height; j++) {
