@@ -5,17 +5,16 @@ import java.util.List;
 import java.util.Random;
 
 public class Game {
-	boolean showInfo = true;
-	boolean showLog= true;
+	boolean showInfo= true;
 	//bullets
-	List<Bullet> bullet = new ArrayList<Bullet>();
+	List<Bullet> bullets = new ArrayList<Bullet>();
 	Color bulletColor;
 	long timeOfLastProjectile =  System.currentTimeMillis();
 	int timeDelayBullet = 50;
 	int speedBullets=10;
 	int bulletPower = 1;
 	//Aliens
-	List<Aliens> aliens= new ArrayList<Aliens>();
+	List<Alien> aliens= new ArrayList<Alien>();
 	Color aliensColor;
 	int speedAliens=30;
 	int AliensLives = 4;
@@ -37,11 +36,16 @@ public class Game {
 	int speedShip=7;
 	Ship ship;
 
+	//Wall
+	Color wallColor;
+	List<Wall> walls = new ArrayList<Wall>();
+
 	//StartButton;
 	int Sx;
 	int SW;
 	int Sy;
 	int SH;
+
 	//Game
 	boolean gameStart=false;
 	long TimeStart = 0;
@@ -63,61 +67,81 @@ public class Game {
 		this.f=f;
 		this.g=f.g;
 	}
+	void initialize() {
+		//Colors
+		bulletColor = new Color(248, 59, 58) ; //red
+		shipColor = new Color (83, 83, 241); //lila
+		aliensColor = new Color(0, 255, 10);
+		bulletColor = new Color(248, 59, 58);
+		wallColor= new Color (98, 222, 109);
+
+		ship = new Ship(X,f.HEIGHT / 2,25,100,speedShip, shipColor);
+
+		//Aliens position
+	 	initialX = (f.WIDTH- (AliensWidth+marginH)* numOfAliensPerRow)/2;
+		initialY = (f.HEIGHT- (AliensHeight+marginV)* numOfAliensPerColumn)/2;
+		//Start Button position
+		Sx = f.WIDTH / 2 - 200;
+		Sy = 3*f.HEIGHT / 4 - 50;
+		SW = 250;
+		SH = 100;
+		//Wall
+		//
+		totalMovesVertical = initialY * 2 -10;
+
+	
+
+	}
 
 	void updateVarsOnLevelChange() {
 		lives+= 2 ;
 		bulletPower += 1;
-		AliensLives += 2;
-		timeDelayBullet -=  2;
+		AliensLives += 1;
+		timeDelayBullet -=  1;
 		speedShip+= 1;
 		speedBullets+= 2;
 			numsOfGuns +=1;
 
 
 	}
-		
 	boolean gameOver() {
 		if (lives <= 0) {
 			return true;
 		}
 		return false;
 	}
-	void move(int k) {
-		ship.moveNau(k);
-		if (ship.IsOutOfRange(f.WIDTH, f.HEIGHT) ) {
-		ship.moveNau(-k);
-		}
-	}
-
-	void GenerateAliens() {
-
-		for (int i = 0; i < numOfAliensPerColumn; i++) {
-			for (int j = 0; j < numOfAliensPerRow; j++) {
-			aliens.add(new Aliens(initialX+ j*(AliensWidth+marginH),initialY+i*(AliensHeight+marginV),AliensWidth,AliensHeight, speedAliens, aliensColor,AliensLives, totalMovesVertical));
-			}
-		}
-
-	}
-	void deleteBullet( int i) {
-		bullet.remove(i);
-	}
-
 	void start(int x, int y) {
 		if ((x > Sx && x < Sx + SW) && (y > Sy && y < Sy + SH)) {
 			gameStart = true;
 		}
 	}
 
-	void deleteAliens(int i) {
-		aliens.remove(i);
+	void GenerateWall() {
+		walls.add(new Wall(200, 150, 3, 10, wallColor));
+		walls.add(new Wall(200, 350, 3, 10, wallColor));
+		walls.add(new Wall(200, 600, 3, 10, wallColor));
 	}
+	
+	void GenerateAliens() {
+
+		for (int i = 0; i < numOfAliensPerColumn; i++) {
+			for (int j = 0; j < numOfAliensPerRow; j++) {
+			aliens.add(new Alien(initialX+ j*(AliensWidth+marginH),initialY+i*(AliensHeight+marginV),AliensWidth,AliensHeight, speedAliens, aliensColor,AliensLives, totalMovesVertical));
+			}
+		}
+
+	}
+	
+
+	
+
 	void shoot() {
 		long timeNow = System.currentTimeMillis();
 		long time = timeNow - timeOfLastProjectile;
 			if (time < 0 || time > timeDelayBullet) {
   			  	timeOfLastProjectile = timeNow;
 				for (int i = 1; i < numsOfGuns+1; i++) {
-				bullet.add(new Bullet(ship.x+ship.width, ship.y+i*ship.height/(numsOfGuns+1),8,3, speedBullets, bulletColor));
+				bullets.add(new Bullet(ship.x+ship.width, ship.y+i*ship.height/(numsOfGuns+1),8,3, speedBullets, bulletColor));
 				}
 			}
 	}
@@ -137,7 +161,7 @@ public class Game {
 		impacts();
 		moveAliens();
 		moveBullets();
-}
+	}
 
 	void run() {
 
@@ -158,19 +182,26 @@ public class Game {
 		}
 		numsOfGuns = 1;
 		aliens.clear();
+		bullets.clear();
 		GenerateAliens();
+		GenerateWall();
 		while (!gameOver()&& gameStart) {
 			if ( aliens.size()==0) {
 				level++;
-				updateVarsOnLevelChange();
+				bullets.clear();
+				walls.clear();
+
 				try {
-				Thread.sleep(500);
+				Thread.sleep(1000);
 				} catch (InterruptedException e) {
 				e.printStackTrace();
 				}
+				updateVarsOnLevelChange();
 				GenerateAliens();
+				GenerateWall();
 			}
 			impacts();
+			wallImpacts();
 			moveAliens();
 			moveBullets();
 			rePaint();
@@ -186,85 +217,98 @@ public class Game {
 			f.repaint();	
 		}
 	}
-	void initialize() {
-		bulletColor = new Color(248, 59, 58) ; //red
-		shipColor = new Color (83, 83, 241); //lila
-		aliensColor = new Color(0, 255, 10);
-		bulletColor = new Color(248, 59, 58);
 
-		ship = new Ship(X,f.HEIGHT / 2,25,100,speedShip, shipColor);
-	 	initialX = (f.WIDTH- (AliensWidth+marginH)* numOfAliensPerRow)/2;
-		initialY = (f.HEIGHT- (AliensHeight+marginV)* numOfAliensPerColumn)/2;
-		//Start Button position
-		Sx = f.WIDTH / 2 - 200;
-		Sy = 3*f.HEIGHT / 4 - 50;
-		SW = 250;
-		SH = 100;
-		//
-		totalMovesVertical = initialY * 2 -10;
-	
+//Moves
 
+	void move(int k) {
+		ship.moveNau(k);
+		if (ship.IsOutOfRange(f.WIDTH, f.HEIGHT) ) {
+		ship.moveNau(-k);
+		}
 	}
+
+
 	void moveAliens() {
-	
 		for(int i=0;i<aliens.size();i++){
 			if (aliens.get(i).moves > totalMovesVertical) {
 				aliens.get(i).moves = 0;
 				aliens.get(i).direction *= -1;
 				aliens.get(i).move();
 			}
-			
 			aliens.get(i).moveVertical();
-			/*if (aliens.get(i).IsOutOfRange(f.WIDTH,f.HEIGHT)) {
-				deleteAliens(i);
+			if (aliens.get(i).IsOutOfRange(f.WIDTH,f.HEIGHT)) {
+				aliens.remove(i);
 				lives--;
-			}*/
+			}
 		}
 	}
 	void moveBullets() {
-		for(int i=0;i<bullet.size();i++){
-			bullet.get(i).move();
-			if (bullet.get(i).IsOutOfRange(f.WIDTH, f.HEIGHT)) {
-				deleteBullet(i);
+		for(int i=0;i<bullets.size();i++){
+			bullets.get(i).move();
+			if (bullets.get(i).IsOutOfRange(f.WIDTH, f.HEIGHT)) {
+				bullets.remove(i);
 			}
 		}
 	}
+	void wallImpacts() {
+		for (int i = 0; i < walls.size(); i++) {
+			
+			if (bullets.size() > 0 && walls.get(i).bricks.size() > 0) {
 
+				List<Bullet> foundBullets = new ArrayList<Bullet>();
+				List<Brick> foundBricks = new ArrayList<Brick>();
+				for (Bullet b : bullets) {
+					for (Brick a : walls.get(i).bricks) {
+						if ((a.x <= b.x + b.width && b.x + b.width <= a.x + a.width)
+								&& (a.y <= b.y && b.y <= a.y + a.height)) {
+								foundBricks.add(a);
+							foundBullets.add(b);
+						}
+					}
+				}
+				bullets.removeAll(foundBullets);
+				walls.get(i).bricks.removeAll(foundBricks);
+				foundBullets = null;
+				foundBricks= null;
+			}
+		}
+
+	}
 	void impacts() {
-		if (bullet.size() > 0 && aliens.size() > 0) {
+		if (bullets.size() > 0 && aliens.size() > 0) {
 
-		List<Bullet> foundB = new ArrayList<Bullet>();
-		List<Aliens> foundA = new ArrayList<Aliens>();
-		for (Bullet b : bullet) {
-			for (Aliens a : aliens) {
-				if ((a.x <= b.x + b.width && b.x + b.width <=a.x+a.width) && (a.y <= b.y && b.y <= a.y + a.height)) {
-					if (a.lives == 1) {
-					foundA.add(a);
+			List<Bullet> foundB = new ArrayList<Bullet>();
+			List<Alien> foundA = new ArrayList<Alien>();
+			for (Bullet b : bullets) {
+				for (Alien a : aliens) {
+					if ((a.x <= b.x + b.width && b.x + b.width <= a.x + a.width)
+							&& (a.y <= b.y && b.y <= a.y + a.height)) {
+						if (a.lives == 1) {
+							foundA.add(a);
+						} else {
+							a.lives--;
+						}
+						foundB.add(b);
+						score++;
 					}
-					else {
-						a.lives--;
-					}
-					foundB.add(b);
-					score++;
 				}
 			}
-		}
-			bullet.removeAll(foundB);
+			bullets.removeAll(foundB);
 			aliens.removeAll(foundA);
-		foundA = null;
-		foundB = null;
+			foundA = null;
+			foundB = null;
 		}
 
 	}
-void rePaintStart() {
+
+//PAINTING
+	void rePaintStart() {
 		g.setFont(f.BigFont);
 		g.setColor(backgroundColor);
 		g.fillRect(0, 0, f.WIDTH, f.HEIGHT);
-		g.setColor(groundColor);
-		g.fillRect(0, 0, X-10, f.HEIGHT);
 		ship.paint(g);
-		for(int i=0;i<bullet.size();i++)
-			bullet.get(i).paint(g);
+		for(int i=0;i<bullets.size();i++)
+			bullets.get(i).paint(g);
 		for(int i=0;i<aliens.size();i++)
 			aliens.get(i).paintAlien(g);
 		g.setColor(new Color(66, 233, 244));
@@ -277,12 +321,10 @@ void rePaintStart() {
 		g.setFont(f.BigFont);
 		g.setColor(backgroundColor);
 		g.fillRect(0, 0, f.WIDTH, f.HEIGHT);
-		g.setColor(groundColor);
-		g.fillRect(0, 0, X-10, f.HEIGHT);
 		g.setColor(textColor);
 		ship.paint(g);
-		for(int i=0;i<bullet.size();i++)
-			bullet.get(i).paint(g);
+		for(int i=0;i<bullets.size();i++)
+			bullets.get(i).paint(g);
 		for(int i=0;i<aliens.size();i++)
 			aliens.get(i).paintAlien(g);
 		g.setColor(new Color(66, 233, 244));
@@ -290,29 +332,27 @@ void rePaintStart() {
 		g.setColor(Color.BLACK);
 		g.drawString("GAME OVER ", f.WIDTH/2, f.HEIGHT/2);
 	}
-		void rePaint() {
+	void rePaint() {
 		g.setFont(f.smallFont);
 		g.setColor(backgroundColor);
 		g.fillRect(0, 0, f.WIDTH, f.HEIGHT);
-		g.setColor(groundColor);
-		g.fillRect(0, 0, X-10, f.HEIGHT);
 		g.setColor(textColor);
 		if (showInfo) {
-			g.drawString("Score: " + score, 20, 500);
-			g.drawString("Level: " + (level), 20, 550);
-			g.drawString("❤️ : " + lives, 20, 520);
+			int x=f.WIDTH-400;
+			g.drawString("SCORE: " + score, x, 600);
+			g.drawString("LEVEL: " + (level), x, 650);
+			g.drawString("LIVES : " + lives, x, 700);
 		}
-		if (showLog) {
-		g.drawString("speed of bullets "+ speedBullets, 20, 100);
-		g.drawString("Ship speed "+ speedShip, 20, 200);
-		g.drawString("Aliens speed "+ speedAliens, 20, 250);
-		g.drawString("numOfAliens per column"+ numOfAliensPerColumn , 20, 300);
-	
-		}
+
 		ship.paint(g);
-		for(int i=0;i<bullet.size();i++)
-			bullet.get(i).paint(g);
-		for(int i=0;i<aliens.size();i++)
-			aliens.get(i).paintAlien(g);
+		for (Bullet bullet:bullets) {
+			bullet.paint(g);
+		}
+		for (Alien alien : aliens) {
+			alien.paintAlien(g);
+		}
+		for (Wall wall : walls) {
+			wall.paint(g);
+		}
 	}
 }

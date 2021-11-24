@@ -1,7 +1,7 @@
 import java.awt.Color;
 import java.awt.Graphics;
 
-public class Aliens extends MovingObject{
+public class Alien extends MovingObject{
 	int totalLives;
 	int lives;
 	int moves;
@@ -16,7 +16,7 @@ public class Aliens extends MovingObject{
 		y+=verticalSpeed* direction;
 		moves++;
 	}
-	Aliens(int x,int y,int width, int height , int speed,Color c, int totalLives , int totalMovesVertical) {
+	Alien(int x,int y,int width, int height , int speed,Color c, int totalLives , int totalMovesVertical) {
 		super(x, y,width,height, speed, c);
 		this.totalLives = totalLives;
 		this.lives = totalLives;
