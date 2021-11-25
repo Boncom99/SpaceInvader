@@ -26,6 +26,7 @@ public class Window extends Frame implements KeyListener, WindowListener, MouseL
 	Image im;
 	Graphics g;
 	Font MainFont;
+	Font MediumFont;
 	Font smallFont;
 	Font BigFont;
 	File file = new File("background.bmp");
@@ -40,6 +41,7 @@ public class Window extends Frame implements KeyListener, WindowListener, MouseL
 
 		MainFont = Font.createFont(Font.TRUETYPE_FONT, new File ("ARCADE.TTF"));
 		 smallFont=MainFont.deriveFont(30f);
+		 MediumFont=MainFont.deriveFont(65f);
 		 BigFont=MainFont.deriveFont(100f);
 		}
 		catch (IOException|FontFormatException e) {
@@ -59,10 +61,10 @@ public class Window extends Frame implements KeyListener, WindowListener, MouseL
 
 	public void update(Graphics g) {
 		if(keys.contains(KeyEvent.VK_DOWN)){
-			game.move(1);
+			game.moveShip(1);
 		}
 		if (keys.contains(KeyEvent.VK_UP)) {
-			game.move(-1);
+			game.moveShip(-1);
 		}
 		/*if(keys.contains(KeyEvent.VK_SPACE)){
 			game.shoot();

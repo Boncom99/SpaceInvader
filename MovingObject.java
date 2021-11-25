@@ -1,5 +1,7 @@
 import java.awt.Color;
 import java.awt.Graphics;
+import java.util.ArrayList;
+import java.util.List;
 
 public abstract class MovingObject{
 	int y;
@@ -24,6 +26,26 @@ public abstract class MovingObject{
 			return true;
 		}
 			return false;
+
+	}
+		void impact(ArrayList <MovingObject> A, ArrayList <MovingObject> B) {
+		if (A.size() > 0 && B.size() > 0) {
+
+			List<MovingObject> foundB = new ArrayList<MovingObject>();
+			for (MovingObject b : B) {
+				for (MovingObject a : A) {
+					if ((a.x <= b.x + b.width && b.x <= a.x + a.width)
+							&& (a.y <= b.y+b.height && b.y <= a.y + a.height)) {
+
+							A.remove(a);
+						foundB.add(b);
+						break;
+					}
+				}
+			}
+			B.removeAll(foundB);
+			foundB = null;
+		}
 
 	}
     abstract void move();

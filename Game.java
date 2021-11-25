@@ -55,7 +55,7 @@ public class Game {
 	int randZERO_ONE = 1;
 	int level=0;
 	long NumOfFrames=0;
-	int lives=15;
+	int lives=3;
 	int score = 0;
 	long durationOfLevel = 30000;
 	long timeOfLastLevel= 0;
@@ -84,9 +84,9 @@ public class Game {
 	 	initialX = 2*(f.WIDTH- (AliensWidth+marginH)* numOfAliensPerRow)/3;
 		initialY = (f.HEIGHT- (AliensHeight+marginV)* numOfAliensPerColumn)/2;
 		//Start Button position
-		Sx = f.WIDTH / 2 - 200;
+		Sx = f.WIDTH / 2 - 150;
 		Sy = 3*f.HEIGHT / 4 - 50;
-		SW = 250;
+		SW = 350;
 		SH = 100;
 		//Wall
 		//
@@ -113,6 +113,7 @@ public class Game {
 	}
 	boolean gameOver() {
 		if (lives <= 0) {
+			gameStart = false;
 			return true;
 		}
 		return false;
@@ -120,6 +121,7 @@ public class Game {
 	void start(int x, int y) {
 		if ((x >= Sx && x <= Sx + SW) && (y >= Sy && y <= Sy + SH)) {
 			gameStart = true;
+			System.out.println("start " + gameStart);
 		}
 	}
 
@@ -147,8 +149,17 @@ public class Game {
 		bullets.add(new Bullet(ship.x+ship.width, ship.y+i*ship.height/(numsOfGuns+1),8,4, speedBullets, bulletColor, 1));
 		}
 	}
-	void aliensShoot(Alien a) {
-		bulletsAliens.add(new Bullet(a.x+a.width, a.y+ship.height/2,8,4, speedBulletsAlien, (Color.ORANGE),-1));
+	void aliensShoot() {
+		long timeNow = System.currentTimeMillis();
+		long time = timeNow - TimeStart;
+		if (time < 0 || time > ShootingRate) {
+			TimeStart = timeNow;
+			if(aliens.size()>0){
+				int aux = Math.abs(r.nextInt()) % (aliens.size());
+				Alien al=aliens.get(aux);
+				bulletsAliens.add(new Bullet(al.x+al.width, al.y+ship.height/2,8,4, speedBulletsAlien, (Color.ORANGE),-1));
+			}
+		}	
 	}
 
 	void randomMove() {
@@ -163,87 +174,190 @@ public class Game {
 				randZERO_ONE = 1;
 			}
 		}
-		move(randZERO_ONE);
-		impactsShip();
-		moveAliens();
-		moveBullets();
+
+		aliensShoot();
+		moveShip(randZERO_ONE);
+		moves();
+		impacts();
 	}
 
-	void run() {
-
-		initialize();
-
-		GenerateAliens();
-		while (!gameStart) {
-			numsOfGuns = 2;
-			rePaintStart();
-			f.repaint();
-			randomMove();
-			try {
-				Thread.sleep(15);
-			} catch (InterruptedException e) {
-				e.printStackTrace();
-			}
-		
+	void frame() {
+		try {
+			Thread.sleep(25);
+		} catch (InterruptedException e) {
+			e.printStackTrace();
 		}
+	}
+
+	void restart(){
+
 		numsOfGuns = 1;
+		lives = 3;
+		score = 0;
+		level = 0;
 		aliens.clear();
 		bullets.clear();
+		bulletsAliens.clear();
+		walls.clear();
 		GenerateAliens();
 		GenerateWall();
-		while (!gameOver()&& gameStart) {
-			if ( aliens.size()==0) {
-				level++;
-				bullets.clear();
-				bulletsAliens.clear();
-				walls.clear();
+		}
 
-				try {
-				Thread.sleep(1000);
-				} catch (InterruptedException e) {
-				e.printStackTrace();
+		void run() {
+
+			initialize();
+			GenerateAliens();
+			GenerateWall();
+			while (!gameStart) {
+				numsOfGuns = 2;
+				rePaintStart();
+				f.repaint();
+				randomMove();
+				frame();
+
+			}
+			while(gameStart){
+				restart();
+				while (!gameOver() && gameStart) {
+					if (aliens.size() == 0) {
+						level++;
+						bullets.clear();
+						bulletsAliens.clear();
+						walls.clear();
+
+						try {
+							Thread.sleep(1000);
+						} catch (InterruptedException e) {
+							e.printStackTrace();
+						}
+						updateVarsOnLevelChange();
+						GenerateAliens();
+						GenerateWall();
+					}
+					impacts();
+					aliensShoot();
+					moves();
+					rePaint();
+					f.repaint();
+					frame();
 				}
-				updateVarsOnLevelChange();
-				GenerateAliens();
-				GenerateWall();
-			}
-			impactBullets();
-			impactsShip();
-			wallImpacts();
-			impactAlien();
-			long timeNow = System.currentTimeMillis();
-			long time = timeNow - TimeStart;
-			if (time < 0 || time > ShootingRate) {
-				TimeStart = timeNow;
-				if(aliens.size()>0){
-					int a = Math.abs(r.nextInt()) % (aliens.size());
-					aliensShoot(aliens.get(a));
+				while (!gameStart) {
+					rePaintEND();
+					f.repaint();
+					System.out.println("aaaaaa");
+					frame();
 				}
 			}
-			moveAliens();
-			moveBullets();
-			rePaint();
-			f.repaint();
-			try {
-				Thread.sleep(25);
-			} catch (InterruptedException e) {
-				e.printStackTrace();
-			}
-		}
-		if (gameOver()) {
-		rePaintEND();
-			f.repaint();	
-		}
+
+	
+
 	}
 
 //Moves
-
-	void move(int k) {
+	void moveShip(int k) {
 		ship.moveNau(k);
 		if (ship.IsOutOfRange(f.WIDTH, f.HEIGHT) ) {
 		ship.moveNau(-k);
 		}
 	}
+	void moves() {
+		moveAliens();
+		moveBullets();
+	}
+	//IMPACTS
+	void impacts(){
+		wallImpacts();
+		impactAlien();
+		impactsShip();
+		impactBullets();
+	}
+	
+//PAINTING
+	void rePaintStart() {
+		g.setFont(f.BigFont);
+		g.setColor(backgroundColor);
+		g.fillRect(0, 0, f.WIDTH, f.HEIGHT);
+		ship.paint(g);
+		for (Bullet bullet : bullets) {
+			bullet.paint(g);
+		}
+		for (Bullet bullet : bulletsAliens) {
+			bullet.paint(g);
+		}
+		for (Alien alien : aliens) {
+			alien.paintAlien(g);
+		}
+		for (Wall w : walls) {
+			w.paint(g);
+		}
+		g.setColor(new Color(66, 233, 244));
+		g.drawString("SPACE INVADERS", f.WIDTH/2-350, f.HEIGHT/2);
+		g.setColor(new Color(235, 223, 100));
+		g.drawString("START", Sx, Sy+100);
+
+	}
+	void rePaintEND() {
+		g.setFont(f.BigFont);
+		g.setColor(backgroundColor);
+		g.fillRect(0, 0, f.WIDTH, f.HEIGHT);
+		g.setColor(textColor);
+		ship.paint(g);
+		for(int i=0;i<bullets.size();i++)
+			bullets.get(i).paint(g);
+		for(int i=0;i<aliens.size();i++)
+			aliens.get(i).paintAlien(g);
+		g.setColor(new Color(66, 233, 244));
+		g.drawString("SPACE INVADERS", f.WIDTH/2-380, f.HEIGHT/2-100);
+		g.setColor(new Color(235, 223, 100));
+		g.drawString("GAME OVER ", f.WIDTH/2-250, f.HEIGHT/2);
+		//g.fillRect(Sx, Sy, SW, SH);
+		g.setFont(f.MediumFont);
+		g.drawString("PLAY AGAIN", Sx, Sy+100);
+		if (showInfo) {
+			g.setFont(f.smallFont);
+			g.setColor(textColor);
+			int x = f.WIDTH - 150;
+			g.drawString("SCORE: " + score, x, 400);
+			g.drawString("LEVEL: " + (level), x, 450);
+			g.drawString("LIVES : " + lives, x, 500);
+		}
+	}
+
+	void rePaint() {
+		g.setFont(f.smallFont);
+		g.setColor(backgroundColor);
+		g.fillRect(0, 0, f.WIDTH, f.HEIGHT);
+		g.setColor(new Color(66, 233, 244));
+		g.drawString("SPACE INVADERS", 550, 100);
+		if (showInfo) {
+			g.setColor(textColor);
+			int x = f.WIDTH - 150;
+			g.drawString("SCORE: " + score, x, 400);
+			g.drawString("LEVEL: " + (level), x, 450);
+			g.drawString("LIVES : " + lives, x, 500);
+		}
+
+		ship.paint(g);
+		for (Bullet bullet : bullets) {
+			bullet.paint(g);
+		}
+		for (Bullet bullet : bulletsAliens) {
+			bullet.paint(g);
+		}
+		for (Alien alien : aliens) {
+			alien.paintAlien(g);
+		}
+		for (Wall wall : walls) {
+			wall.paint(g);
+		}
+	}
+
+	
+
+
+
+
+
 
 
 	void moveAliens() {
@@ -275,7 +389,9 @@ public class Game {
 			}
 		}
 	}
-//IMPACTS
+
+
+
 	void wallImpacts() {
 		for (int i = 0; i < walls.size(); i++) {
 			
@@ -333,7 +449,7 @@ public class Game {
 			List<Bullet> foundB = new ArrayList<Bullet>();
 			for (Bullet b : bullets) {
 				for (Alien a : aliens) {
-					if ((a.x <= b.x + b.width && b.x + b.width <= a.x + a.width)
+					if ((a.x <= b.x + b.width && b.x  <= a.x + a.width)
 							&& (a.y <= b.y+b.height && b.y <= a.y + a.height)) {
 						if (a.lives <= 1) {
 							aliens.remove(a);
@@ -367,65 +483,5 @@ void impactBullets() {
 			bullets.removeAll(foundB);
 		}
 
-	}
-//PAINTING
-	void rePaintStart() {
-		g.setFont(f.BigFont);
-		g.setColor(backgroundColor);
-		g.fillRect(0, 0, f.WIDTH, f.HEIGHT);
-		ship.paint(g);
-		for(int i=0;i<bullets.size();i++)
-			bullets.get(i).paint(g);
-		for(int i=0;i<aliens.size();i++)
-			aliens.get(i).paintAlien(g);
-		g.setColor(new Color(66, 233, 244));
-		g.drawString("SPACE INVADERS", f.WIDTH/2-350, f.HEIGHT/2);
-		//g.fillRect(Sx, Sy, SW, SH);
-		g.setColor(new Color(235, 223, 100));
-		g.drawString("START", Sx, Sy+100);
-
-	}
-	void rePaintEND() {
-		g.setFont(f.BigFont);
-		g.setColor(backgroundColor);
-		g.fillRect(0, 0, f.WIDTH, f.HEIGHT);
-		g.setColor(textColor);
-		ship.paint(g);
-		for(int i=0;i<bullets.size();i++)
-			bullets.get(i).paint(g);
-		for(int i=0;i<aliens.size();i++)
-			aliens.get(i).paintAlien(g);
-		g.setColor(new Color(66, 233, 244));
-		g.drawString("SPACE INVADERS", f.WIDTH/2-350, f.HEIGHT/2-100);
-		g.setColor(new Color(235, 223, 100));
-		g.drawString("GAME OVER ", f.WIDTH/2-200, f.HEIGHT/2+200);
-	}
-	void rePaint() {
-		g.setFont(f.smallFont);
-		g.setColor(backgroundColor);
-		g.fillRect(0, 0, f.WIDTH, f.HEIGHT);
-		g.setColor(new Color(66, 233, 244));
-		g.drawString("SPACE INVADERS", 550, 100);
-		g.setColor(textColor);
-		if (showInfo) {
-			int x=f.WIDTH-150;
-			g.drawString("SCORE: " + score, x, 400);
-			g.drawString("LEVEL: " + (level), x, 450);
-			g.drawString("LIVES : " + lives, x, 500);
-		}
-
-		ship.paint(g);
-		for (Bullet bullet:bullets) {
-			bullet.paint(g);
-		}
-		for (Bullet bullet:bulletsAliens) {
-			bullet.paint(g);
-		}
-		for (Alien alien : aliens) {
-			alien.paintAlien(g);
-		}
-		for (Wall wall : walls) {
-			wall.paint(g);
-		}
 	}
 }
