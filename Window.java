@@ -3,9 +3,9 @@ import java.awt.FontFormatException;
 import java.awt.Frame;
 import java.awt.Graphics;
 import java.awt.Image;
+import java.awt.MouseInfo;
 import java.awt.Point;
 import java.awt.PointerInfo;
-import java.awt.MouseInfo;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
@@ -30,6 +30,10 @@ public class Window extends Frame implements KeyListener, WindowListener, MouseL
 	Font smallFont;
 	Font BigFont;
 	File file = new File("background.bmp");
+	/*String audioFile = "bip.mp3";
+	Media hit = new Media(new File(audioFile).toURI().toString());
+	MediaPlayer mediaPlayer = new MediaPlayer(hit);
+	mediaPlayer.play();*/
 
 	public static void main(String[] args) {
 		new Window();
