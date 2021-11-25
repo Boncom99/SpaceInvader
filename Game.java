@@ -137,7 +137,7 @@ public class Game {
 		for (int i = 0; i < 40; i++) {
 		int W=Math.abs(r.nextInt()) % (f.WIDTH);	
 		int H=Math.abs(r.nextInt()) % (f.HEIGHT-50)+50;	
-		int S=Math.abs(r.nextInt()) % (5)+1;	
+		int S=Math.abs(r.nextInt()) % (7)+1;	
 			stars.add(new Star(W, H, S));
 		}
 	}	
@@ -260,7 +260,6 @@ public class Game {
 			}
 
 	
-
 	}
 
 //Moves
