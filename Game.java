@@ -49,6 +49,8 @@ public class Game {
 	int Sy;
 	int SH;
 
+	//background stars
+	List<Star> stars = new ArrayList<Star>();
 	//Game
 	boolean gameStart=false;
 	long TimeStart = 0;
@@ -130,7 +132,15 @@ public class Game {
 		walls.add(new Wall(X+50, 250, 5, 6, wallColor));
 		walls.add(new Wall(X+50, 450, 5, 6, wallColor));
 	}
-	
+
+	void GenerateStars() {
+		for (int i = 0; i < 40; i++) {
+		int W=Math.abs(r.nextInt()) % (f.WIDTH);	
+		int H=Math.abs(r.nextInt()) % (f.HEIGHT-50)+50;	
+		int S=Math.abs(r.nextInt()) % (5)+1;	
+			stars.add(new Star(W, H, S));
+		}
+	}	
 	void GenerateAliens() {
 
 		for (int i = 0; i < numOfAliensPerColumn; i++) {
@@ -208,6 +218,7 @@ public class Game {
 			initialize();
 			GenerateAliens();
 			GenerateWall();
+			GenerateStars();
 			while (!gameStart) {
 				numsOfGuns = 2;
 				rePaintStart();
@@ -244,7 +255,6 @@ public class Game {
 				while (!gameStart) {
 					rePaintEND();
 					f.repaint();
-					System.out.println("aaaaaa");
 					frame();
 				}
 			}
@@ -277,6 +287,9 @@ public class Game {
 		g.setFont(f.BigFont);
 		g.setColor(backgroundColor);
 		g.fillRect(0, 0, f.WIDTH, f.HEIGHT);
+		for (Star star : stars) {
+			star.paintStar(g);
+		}
 		ship.paint(g);
 		for (Bullet bullet : bullets) {
 			bullet.paint(g);
@@ -300,6 +313,9 @@ public class Game {
 		g.setFont(f.BigFont);
 		g.setColor(backgroundColor);
 		g.fillRect(0, 0, f.WIDTH, f.HEIGHT);
+		for (Star star : stars) {
+			star.paintStar(g);
+		}
 		g.setColor(textColor);
 		ship.paint(g);
 		for(int i=0;i<bullets.size();i++)
@@ -327,6 +343,9 @@ public class Game {
 		g.setFont(f.smallFont);
 		g.setColor(backgroundColor);
 		g.fillRect(0, 0, f.WIDTH, f.HEIGHT);
+		for (Star star : stars) {
+			star.paintStar(g);
+		}
 		g.setColor(new Color(66, 233, 244));
 		g.drawString("SPACE INVADERS", 550, 100);
 		if (showInfo) {

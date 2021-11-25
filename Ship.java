@@ -1,4 +1,5 @@
 import java.awt.Color;
+import java.awt.Graphics;
 
 public class Ship extends MovingObject{
 	public Ship(int x, int y,int width, int height, int speed, Color c) {
@@ -11,5 +12,7 @@ public class Ship extends MovingObject{
 	void moveNau(int k){
 		y+= k*speed;
 	}
+
+	
 	
 }
