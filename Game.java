@@ -227,6 +227,27 @@ public class Game {
 		GenerateWall();
 		}
 
+	void ForwardAnimation() {
+		int initialSpeed = stars.get(0).speed;
+		for (Star s: stars) {
+			s.speed = 30;	
+		}
+		long InitTime = System.currentTimeMillis();
+		long now= System.currentTimeMillis();
+		while (now - InitTime < 2500) {
+			now = System.currentTimeMillis();
+			moveStars();
+			moveBullets();
+			repaintAnimation();
+			f.repaint();
+			frame();
+		}
+		for (Star s: stars) {
+			s.speed = initialSpeed;	
+		}
+		bullets.clear();
+
+		}
 		void run() {
 			initialize();
 			GenerateAliens();
@@ -242,18 +263,14 @@ public class Game {
 			}
 			while(gameStart){
 				restart();
-				while (!gameOver() && gameStart) {
+				ForwardAnimation();
+				while (!gameOver()) {
 					if (aliens.size() == 0) {
 						level++;
 						bullets.clear();
 						bulletsAliens.clear();
 						walls.clear();
-
-						try {
-							Thread.sleep(1000);
-						} catch (InterruptedException e) {
-							e.printStackTrace();
-						}
+						ForwardAnimation();
 						updateVarsOnLevelChange();
 						GenerateAliens();
 						GenerateWall();
@@ -384,7 +401,33 @@ public class Game {
 		}
 	}
 
-	
+void repaintAnimation() {
+		g.setFont(f.smallFont);
+		g.setColor(backgroundColor);
+		g.fillRect(0, 0, f.WIDTH, f.HEIGHT);
+		for (Star star : stars) {
+			star.paintStar(g);
+		}
+		g.setColor(new Color(66, 233, 244));
+		g.drawString("SPACE INVADERS", 550, 100);
+		if (showInfo) {
+			g.setColor(textColor);
+			int x = f.WIDTH - 150;
+			g.drawString("SCORE: " + score, x, 400);
+			g.drawString("LEVEL: " + (level), x, 450);
+			g.drawString("LIVES : " + lives, x, 500);
+		}
+
+		ship.paint(g);
+		for (Bullet bullet : bullets) {
+			bullet.paint(g);
+		}
+		for (Bullet bullet : bulletsAliens) {
+			bullet.paint(g);
+		}
+		
+		
+	}	
 
 
 
