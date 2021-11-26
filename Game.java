@@ -127,9 +127,9 @@ public class Game {
 	}
 
 	void GenerateWall() {
-		walls.add(new Wall(X+50, 100, 5, 6, wallColor));
-		walls.add(new Wall(X+50, 250, 5, 6, wallColor));
-		walls.add(new Wall(X+50, 450, 5, 6, wallColor));
+		walls.add(new Wall(X+70, 100, 5, 6,20, wallColor));
+		walls.add(new Wall(X+70, 250, 5, 6,20, wallColor));
+		walls.add(new Wall(X+70, 450, 5, 6,20, wallColor));
 	}
 
 	void GenerateStars() {
@@ -222,9 +222,6 @@ public class Game {
 		aliens.clear();
 		bullets.clear();
 		bulletsAliens.clear();
-		walls.clear();
-		GenerateAliens();
-		GenerateWall();
 		}
 
 	void ForwardAnimation() {
@@ -238,6 +235,7 @@ public class Game {
 			now = System.currentTimeMillis();
 			moveStars();
 			moveBullets();
+			moveWall();
 			repaintAnimation();
 			f.repaint();
 			frame();
@@ -246,6 +244,7 @@ public class Game {
 			s.speed = initialSpeed;	
 		}
 		bullets.clear();
+		walls.clear();
 
 		}
 		void run() {
@@ -264,12 +263,13 @@ public class Game {
 			while(gameStart){
 				restart();
 				ForwardAnimation();
+				GenerateWall();
+				GenerateAliens();
 				while (!gameOver()) {
 					if (aliens.size() == 0) {
 						level++;
 						bullets.clear();
 						bulletsAliens.clear();
-						walls.clear();
 						ForwardAnimation();
 						updateVarsOnLevelChange();
 						GenerateAliens();
@@ -425,6 +425,9 @@ void repaintAnimation() {
 		for (Bullet bullet : bulletsAliens) {
 			bullet.paint(g);
 		}
+		for (Wall wall : walls) {
+			wall.paint(g);
+		}
 		
 		
 	}	
@@ -470,10 +473,16 @@ void repaintAnimation() {
 	}
 
 	void moveStars() {
-	for (Star s : stars) {
-		s.move(f.WIDTH);	
+		for (Star s : stars) {
+			s.move(f.WIDTH);	
+		}
 	}
-}
+	void moveWall() {
+		for (Wall wall : walls){
+			wall.move(0);
+		}
+	}
+
 
 	void wallImpacts() {
 		for (int i = 0; i < walls.size(); i++) {

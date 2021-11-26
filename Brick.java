@@ -1,18 +1,16 @@
 import java.awt.Color;
 import java.awt.Graphics;
 
-public class Brick{
-	int x;
-	int y;
-	int width;
-	int height;
-	Color c;
-	public Brick(int x, int y,int width, int height, Color c) {
-		this.x = x;
-		this.y = y;
-		this.width = width;
-		this.height = height;
-		this.c = c;
+public class Brick extends MovingObject{
+;
+	@Override
+	void move(int k) {
+		x += k*speed;
+		
+	}
+	public Brick(int x, int y,int width, int height,int speed, Color c){
+
+		super(x, y,width,height, speed, c);
 
 	}
 	void paint(Graphics g){
