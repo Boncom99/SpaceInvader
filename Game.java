@@ -57,7 +57,6 @@ public class Game {
 	int randZERO_ONE = 1;
 	int level=0;
 	long NumOfFrames=0;
-	int lives=3;
 	int score = 0;
 	long durationOfLevel = 30000;
 	long timeOfLastLevel= 0;
@@ -80,7 +79,7 @@ public class Game {
 		bulletColor = new Color(248, 59, 58);
 		wallColor= new Color (98, 222, 109);
 
-		ship = new Ship(X,f.HEIGHT / 2,20,45,speedShip, shipColor);
+		ship = new Ship(X,f.HEIGHT / 2,20,45,speedShip, shipColor, 3);
 
 		//Aliens position
 	 	initialX = 2*(f.WIDTH- (AliensWidth+marginH)* numOfAliensPerRow)/3;
@@ -99,7 +98,7 @@ public class Game {
 	}
 
 	void updateVarsOnLevelChange() {
-		lives= 3 ;
+		ship.lives= 3 ;
 		bulletPower += 1;
 		AliensLives += 1;
 		timeDelayBullet -=  1;
@@ -114,7 +113,7 @@ public class Game {
 
 	}
 	boolean gameOver() {
-		if (lives <= 0) {
+		if (ship.lives <= 0) {
 			gameStart = false;
 			return true;
 		}
@@ -209,7 +208,7 @@ public class Game {
 	void restart(){
 
 		numsOfGuns = 1;
-		lives = 3;
+		ship.lives = 3;
 		AliensLives = 1;
 		score = 0;
 		level = 0;
@@ -308,7 +307,7 @@ public class Game {
 	void impacts(){
 		wallImpacts();
 		impactAlien();
-		impactsShip();
+		ship.impactShip(bulletsAliens);
 		impactBullets();
 	}
 	
@@ -337,7 +336,6 @@ public class Game {
 		g.drawString("SPACE INVADERS", f.WIDTH/2-350, f.HEIGHT/2);
 		g.setColor(new Color(235, 223, 100));
 		g.drawString("START", Sx, Sy+100);
-
 	}
 	void rePaintEND() {
 		g.setFont(f.BigFont);
@@ -365,7 +363,7 @@ public class Game {
 			int x = f.WIDTH - 150;
 			g.drawString("SCORE: " + score, x, 400);
 			g.drawString("LEVEL: " + (level), x, 450);
-			g.drawString("LIVES : " + lives, x, 500);
+			g.drawString("LIVES : " + ship.lives, x, 500);
 		}
 	}
 
@@ -383,9 +381,8 @@ public class Game {
 			int x = f.WIDTH - 150;
 			g.drawString("SCORE: " + score, x, 400);
 			g.drawString("LEVEL: " + (level), x, 450);
-			g.drawString("LIVES : " + lives, x, 500);
+			g.drawString("LIVES : " + ship.lives, x, 500);
 		}
-
 		ship.paint(g);
 		for (Bullet bullet : bullets) {
 			bullet.paint(g);
@@ -415,9 +412,8 @@ void repaintAnimation() {
 			int x = f.WIDTH - 150;
 			g.drawString("SCORE: " + score, x, 400);
 			g.drawString("LEVEL: " + (level), x, 450);
-			g.drawString("LIVES : " + lives, x, 500);
+			g.drawString("LIVES : " + ship.lives, x, 500);
 		}
-
 		ship.paint(g);
 		for (Bullet bullet : bullets) {
 			bullet.paint(g);
@@ -428,8 +424,6 @@ void repaintAnimation() {
 		for (Wall wall : walls) {
 			wall.paint(g);
 		}
-		
-		
 	}	
 
 
@@ -448,7 +442,7 @@ void repaintAnimation() {
 			aliens.get(i).moveVertical();
 			if (aliens.get(i).IsOutOfRange(f.WIDTH,f.HEIGHT)) {
 				aliens.remove(i);
-				lives--;
+				ship.lives--;
 			}
 		}
 	}
@@ -487,93 +481,40 @@ void repaintAnimation() {
 	void wallImpacts() {
 		for (int i = 0; i < walls.size(); i++) {
 			
-			if (bullets.size() > 0 && walls.get(i).bricks.size() > 0) {
-
-				List<Bullet> foundBullets = new ArrayList<Bullet>();
-				for (Bullet b : bullets) {
-					for (Brick a : walls.get(i).bricks) {
-						if ((a.x <= b.x + b.width )
-								&& (a.y <= b.y+b.height && b.y <= a.y + a.height)) {
-								walls.get(i).bricks.remove(a);
-								foundBullets.add(b);
-								break;
-						}
+			
+			if ( walls.get(i).bricks.size() > 0) {
+				List<Brick> foundBrick= new ArrayList<Brick>();
+				for (Brick brick : walls.get(i).bricks) {
+					if (brick.impact(bullets)) {
+						foundBrick.add(brick);	
+					} else if(brick.impact(bulletsAliens)) {
+						foundBrick.add(brick);	
 					}
 				}
-				bullets.removeAll(foundBullets);
-				foundBullets = null;
-			}
-			if (bulletsAliens.size() > 0 && walls.get(i).bricks.size() > 0) {
-
-				List<Bullet> foundBullets = new ArrayList<Bullet>();
-				for (Bullet b : bulletsAliens) {
-					for (Brick a : walls.get(i).bricks) {
-						if ((a.x >= b.x )&& (a.y <= b.y+b.height && b.y <= a.y + a.height)) {
-							walls.get(i).bricks.remove(a);
-							foundBullets.add(b);
-							break;
-						}
-					}
-				}
-				bulletsAliens.removeAll(foundBullets);
-				foundBullets = null;
+				walls.get(i).bricks.removeAll(foundBrick);
 			}
 		}
-
 	}
-
 	void impactAlien() {
-			List<Bullet> foundB = new ArrayList<Bullet>();
-		for (Bullet b : bulletsAliens) {
-			if (ship.x <= b.x  && b.x  <= ship.x + ship.width   && (ship.y <= b.y+b.height && b.y <= ship.y + ship.height)){
-				foundB.add(b);
-				lives--;
-			}
-		}
-		bulletsAliens.removeAll(foundB);
-		foundB = null;
-	
+		if (aliens.size() > 0) {
+			List<Alien> foundB = new ArrayList<Alien>();
+			for (Alien alien : aliens) {
 
-	}
-	void impactsShip() {
-		if (bullets.size() > 0 && aliens.size() > 0) {
-
-			List<Bullet> foundB = new ArrayList<Bullet>();
-			for (Bullet b : bullets) {
-				for (Alien a : aliens) {
-					if ((a.x <= b.x + b.width && b.x  <= a.x + a.width)
-							&& (a.y <= b.y+b.height && b.y <= a.y + a.height)) {
-						if (a.lives <= 1) {
-							aliens.remove(a);
-						} else {
-							a.lives--;
-						}
-						foundB.add(b);
-						score++;
-						break;
-					}
+				if (alien.impactAlien(bullets)) {
+					foundB.add(alien);
 				}
 			}
-			bullets.removeAll(foundB);
-			foundB = null;
+			aliens.removeAll(foundB);
 		}
-
 	}
-void impactBullets() {
-		if (bullets.size() > 0 && bulletsAliens.size() > 0) {
-			List<Bullet> foundB = new ArrayList<Bullet>();
-			for (Bullet b : bullets) {
-				for (Bullet a : bulletsAliens) {
-					if ((a.x >= b.x  && b.x + b.width+2 >= a.x )
-							&& (a.y+a.height >= b.y && a.y <= b.y + b.height)) {
-						foundB.add(b);
-						bulletsAliens.remove(a);
-						break;
-					}
-				}
-			}
-			bullets.removeAll(foundB);
-		}
 
+	void impactBullets() {
+		List<Bullet> foundB = new ArrayList<Bullet>();
+		for (Bullet bullet : bullets) {
+			if (bullet.impact(bulletsAliens)) {
+				foundB.add(bullet);
+			}
+		}
+		bullets.removeAll(foundB);
 	}
 }

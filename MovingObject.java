@@ -28,26 +28,25 @@ public abstract class MovingObject{
 			return false;
 
 	}
-		void impact(ArrayList <MovingObject> A, ArrayList <MovingObject> B) {
-		if (A.size() > 0 && B.size() > 0) {
 
-			List<MovingObject> foundB = new ArrayList<MovingObject>();
-			for (MovingObject b : B) {
-				for (MovingObject a : A) {
-					if ((a.x <= b.x + b.width && b.x <= a.x + a.width)
-							&& (a.y <= b.y+b.height && b.y <= a.y + a.height)) {
-
-							A.remove(a);
-						foundB.add(b);
-						break;
-					}
+	boolean overlap(MovingObject object) {
+		if((x <= object.x + object.width && object.x <= x + width)
+				&& (y <= object.y + object.height && object.y <= y + height)) {
+			return true;
+			}
+			return false;
+	}
+	boolean impact(List <Bullet> A) {
+		if (A.size() > 0) {
+			for (Bullet a : A) {
+				if (a.overlap(this)) {
+					A.remove(a);
+					return true;
 				}
 			}
-			B.removeAll(foundB);
-			foundB = null;
 		}
-
-	}
+		return false;
+	}	
     abstract void move(int k);
 	void paint(Graphics g) {
 		g.setColor(c);
