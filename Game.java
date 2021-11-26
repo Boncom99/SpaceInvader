@@ -222,6 +222,9 @@ public class Game {
 		aliens.clear();
 		bullets.clear();
 		bulletsAliens.clear();
+		ForwardAnimation();
+		GenerateWall();
+		GenerateAliens();
 		}
 
 	void ForwardAnimation() {
@@ -262,9 +265,6 @@ public class Game {
 			}
 			while(gameStart){
 				restart();
-				ForwardAnimation();
-				GenerateWall();
-				GenerateAliens();
 				while (!gameOver()) {
 					if (aliens.size() == 0) {
 						level++;
