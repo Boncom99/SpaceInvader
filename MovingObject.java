@@ -48,7 +48,7 @@ public abstract class MovingObject{
 		}
 
 	}
-    abstract void move();
+    abstract void move(int k);
 	void paint(Graphics g) {
 		g.setColor(c);
 		g.fillRoundRect(x, y, width,height,10,10);

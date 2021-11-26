@@ -1,23 +1,26 @@
 import java.awt.Color;
 import java.awt.Graphics;
 
-public class Star {
+public class Star extends MovingObject{
     
-    int x;
-    int y;
-    int size;
 
+	@Override
+    void move(int init) {
+        if (x>0) {
+        x += -speed; 
+    } else {
+        x = init;
+        }
+    }
 
-	Star(int x,int y , int size) {
-        this.x = x;
-        this.y = y;
-        this.size = size;
+    public Star(int x, int y,int width, int height, int speed, Color c) {
+        	super(x, y,width,height, speed, c);
 		}
 
 		void paintStar(Graphics g){
-		g.setColor(new Color(255, 255, 255)); 
-        g.fillArc(x, y, size, size, 0, 360);
-        g.drawLine(x+size/2, y+size/2 +5*size/6, x+size/2, y+size/2-5*size/6);//vertical
-        g.drawLine( x+size/2+5*size/6, y+size/2, x+size/2-5*size/6,y+size/2); //horizontal
+		g.setColor(c); 
+        g.fillArc(x, y, width, height, 0, 360);
+        g.drawLine(x+height/2, y+height/2 +5*height/6, x+height/2, y+height/2-5*height/6);//vertical
+        g.drawLine( x+height/2+5*height/6, y+height/2, x+height/2-5*height/6,y+height/2); //horizontal
 		}
 	}

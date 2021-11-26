@@ -20,7 +20,7 @@ public class Game {
 	int ShootingRate=800;
 	int speedBulletsAlien=5;
 	int speedAliens=30;
-	int AliensLives = 2;
+	int AliensLives = 3;
 	int AliensHeight=30;
 	int AliensWidth=15;
 	int numOfAliensPerColumn = 10;
@@ -76,7 +76,7 @@ public class Game {
 		//Colors
 		bulletColor = new Color(248, 59, 58) ; //red
 		shipColor = new Color (83, 83, 241); //lila
-		aliensColor = new Color(0, 255, 10);
+		aliensColor = new Color(219, 85, 221);
 		bulletColor = new Color(248, 59, 58);
 		wallColor= new Color (98, 222, 109);
 
@@ -123,7 +123,6 @@ public class Game {
 	void start(int x, int y) {
 		if ((x >= Sx && x <= Sx + SW) && (y >= Sy && y <= Sy + SH)) {
 			gameStart = true;
-			System.out.println("start " + gameStart);
 		}
 	}
 
@@ -134,11 +133,19 @@ public class Game {
 	}
 
 	void GenerateStars() {
+		List<Color> color = new ArrayList<Color>();
+		color.add(new Color(255,255,255));
+		color.add(new Color(168,123,255));
+		color.add(new Color(255, 250, 134));
+		color.add(new Color(202, 216 ,255));
 		for (int i = 0; i < 40; i++) {
 		int W=Math.abs(r.nextInt()) % (f.WIDTH);	
 		int H=Math.abs(r.nextInt()) % (f.HEIGHT-50)+50;	
-		int S=Math.abs(r.nextInt()) % (7)+1;	
-			stars.add(new Star(W, H, S));
+		int S1=Math.abs(r.nextInt()) % (7)+1;	
+		int S2=Math.abs(r.nextInt()) % (6)+1;	
+		int c=Math.abs(r.nextInt()) % 4;	
+		
+			stars.add(new Star(W, H, S1, S2,1, color.get(c)));
 		}
 	}	
 	void GenerateAliens() {
@@ -156,7 +163,7 @@ public class Game {
 
 	void shoot() {
 		for (int i = 1; i < numsOfGuns+1; i++) {
-		bullets.add(new Bullet(ship.x+ship.width, ship.y+i*ship.height/(numsOfGuns+1),8,4, speedBullets, bulletColor, 1));
+		bullets.add(new Bullet(ship.x+ship.width, ship.y+i*ship.height/(numsOfGuns+1),8,4, speedBullets, bulletColor));
 		}
 	}
 	void aliensShoot() {
@@ -167,7 +174,7 @@ public class Game {
 			if(aliens.size()>0){
 				int aux = Math.abs(r.nextInt()) % (aliens.size());
 				Alien al=aliens.get(aux);
-				bulletsAliens.add(new Bullet(al.x+al.width, al.y+ship.height/2,8,4, speedBulletsAlien, (Color.ORANGE),-1));
+				bulletsAliens.add(new Bullet(al.x+al.width, al.y+ship.height/2,8,4, speedBulletsAlien, (Color.ORANGE)));
 			}
 		}	
 	}
@@ -203,8 +210,15 @@ public class Game {
 
 		numsOfGuns = 1;
 		lives = 3;
+		AliensLives = 1;
 		score = 0;
 		level = 0;
+		bulletPower=1;
+		timeDelayBullet =  50;
+		speedShip= 4;
+		speedBullets= 10;
+		speedBulletsAlien = 5;
+		ShootingRate = 800;
 		aliens.clear();
 		bullets.clear();
 		bulletsAliens.clear();
@@ -214,7 +228,6 @@ public class Game {
 		}
 
 		void run() {
-
 			initialize();
 			GenerateAliens();
 			GenerateWall();
@@ -264,14 +277,15 @@ public class Game {
 
 //Moves
 	void moveShip(int k) {
-		ship.moveNau(k);
+		ship.move(k);
 		if (ship.IsOutOfRange(f.WIDTH, f.HEIGHT) ) {
-		ship.moveNau(-k);
+		ship.move(-k);
 		}
 	}
 	void moves() {
 		moveAliens();
 		moveBullets();
+		moveStars();
 	}
 	//IMPACTS
 	void impacts(){
@@ -383,7 +397,7 @@ public class Game {
 			if (aliens.get(i).moves > totalMovesVertical) {
 				aliens.get(i).moves = 0;
 				aliens.get(i).direction *= -1;
-				aliens.get(i).move();
+				aliens.get(i).move(0);
 			}
 			aliens.get(i).moveVertical();
 			if (aliens.get(i).IsOutOfRange(f.WIDTH,f.HEIGHT)) {
@@ -394,21 +408,29 @@ public class Game {
 	}
 
 	void moveBullets() {
-		for (int i = 0; i < bullets.size(); i++) {
-			bullets.get(i).move();
-			if (bullets.get(i).IsOutOfRange(f.WIDTH, f.HEIGHT)) {
-				bullets.remove(i);
+		List<Bullet> OUT = new ArrayList<Bullet>();
+			for (Bullet bullet : bullets) {
+			bullet.move(1);
+			if (bullet.IsOutOfRange(f.WIDTH, f.HEIGHT)) {
+				OUT.add(bullet);
 			}
 		}
-		for (int i = 0; i < bulletsAliens.size(); i++) {
-			bulletsAliens.get(i).move();
-			if (bulletsAliens.get(i).IsOutOfRange(f.WIDTH, f.HEIGHT)) {
-				bulletsAliens.remove(i);
+		bullets.removeAll(OUT);
+		OUT.clear();
+		for (Bullet bullet : bulletsAliens) {
+				bullet.move(-1);
+			if (bullet.IsOutOfRange(f.WIDTH, f.HEIGHT)) {
+				OUT.add(bullet);
 			}
 		}
+		bulletsAliens.removeAll(OUT);
 	}
 
-
+	void moveStars() {
+	for (Star s : stars) {
+		s.move(f.WIDTH);	
+	}
+}
 
 	void wallImpacts() {
 		for (int i = 0; i < walls.size(); i++) {

@@ -8,7 +8,7 @@ public class Alien extends MovingObject{
 	int direction;
 	int verticalSpeed;
 	@Override
-	void move() {
+	void move(int k) {
 		x-=speed;
 	}
 
@@ -27,11 +27,10 @@ public class Alien extends MovingObject{
 		}
 
 		void paintAlien(Graphics g){
+		g.setColor(c); //magenta
+		g.fillRoundRect(x, y, width,height,10,10);
 		g.setColor(new Color(235, 223, 100)); //groc
 		int w = (width / totalLives) * (totalLives - lives);
-		g.fillRect(x, y,w,height);
-		//g.setColor(c);
-		g.setColor( new Color(219, 85, 221)); //magenta
-		g.fillRect(x+w, y, (width/totalLives) *(lives),height);
+		g.fillRoundRect(x, y,w,height,10,10);
 		}
 	}
