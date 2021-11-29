@@ -35,9 +35,10 @@ public class Game {
 	
 	//Ship
 	Color shipColor;
-	int numsOfGuns=1;
 	int speedShip=4;
 	Ship ship;
+	long TimeShoot= 0;
+	int ShootingRateShip=400;
 
 	//Wall
 	Color wallColor;
@@ -79,7 +80,7 @@ public class Game {
 		bulletColor = new Color(248, 59, 58);
 		wallColor= new Color (98, 222, 109);
 
-		ship = new Ship(X,f.HEIGHT / 2,20,45,speedShip, shipColor, 3);
+		ship = new Ship(X,f.HEIGHT / 2,20,45,speedShip, shipColor, 3, 2);
 
 		//Aliens position
 	 	initialX = 2*(f.WIDTH- (AliensWidth+marginH)* numOfAliensPerRow)/3;
@@ -106,8 +107,12 @@ public class Game {
 		speedBullets+= 1;
 		speedBulletsAlien += 1;
 		ShootingRate += -50;
-		if (numsOfGuns < 3) {
-		numsOfGuns +=1;
+		if (ShootingRateShip > 50)
+			ShootingRate += -50;
+		if (level%3 ==0 &&ship.numOfGuns<4) {
+		ship.numOfGuns +=1;
+		numOfAliensPerRow += 1;
+
 		}
 
 
@@ -161,8 +166,11 @@ public class Game {
 	
 
 	void shoot() {
-		for (int i = 1; i < numsOfGuns+1; i++) {
-		bullets.add(new Bullet(ship.x+ship.width, ship.y+i*ship.height/(numsOfGuns+1),8,4, speedBullets, bulletColor));
+		long timeNow = System.currentTimeMillis();
+		long time = timeNow - TimeShoot;
+		if (time < 0 || time > ShootingRateShip) {
+			TimeShoot = timeNow;
+			ship.shoot(bullets, speedBullets, bulletColor);
 		}
 	}
 	void aliensShoot() {
@@ -207,7 +215,7 @@ public class Game {
 
 	void restart(){
 
-		numsOfGuns = 1;
+		ship.numOfGuns = 1;
 		ship.lives = 3;
 		AliensLives = 1;
 		score = 0;
@@ -255,7 +263,7 @@ public class Game {
 			GenerateWall();
 			GenerateStars();
 			while (!gameStart) {
-				numsOfGuns = 2;
+				ship.numOfGuns = 2;
 				rePaintStart();
 				f.repaint();
 				randomMove();
@@ -319,7 +327,7 @@ public class Game {
 		for (Star star : stars) {
 			star.paintStar(g);
 		}
-		ship.paint(g);
+		ship.paintShip(g);
 		for (Bullet bullet : bullets) {
 			bullet.paint(g);
 		}
@@ -345,7 +353,7 @@ public class Game {
 			star.paintStar(g);
 		}
 		g.setColor(textColor);
-		ship.paint(g);
+		ship.paintShip(g);
 		for(int i=0;i<bullets.size();i++)
 			bullets.get(i).paint(g);
 		for(int i=0;i<aliens.size();i++)
@@ -383,7 +391,7 @@ public class Game {
 			g.drawString("LEVEL: " + (level), x, 450);
 			g.drawString("LIVES : " + ship.lives, x, 500);
 		}
-		ship.paint(g);
+		ship.paintShip(g);
 		for (Bullet bullet : bullets) {
 			bullet.paint(g);
 		}
@@ -414,7 +422,7 @@ void repaintAnimation() {
 			g.drawString("LEVEL: " + (level), x, 450);
 			g.drawString("LIVES : " + ship.lives, x, 500);
 		}
-		ship.paint(g);
+		ship.paintShip(g);
 		for (Bullet bullet : bullets) {
 			bullet.paint(g);
 		}
