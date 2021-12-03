@@ -38,6 +38,7 @@ public class Ship extends MovingObject{
 	}
 
 	void shoot(List <Bullet> bullets , int speedBullets, Color color) {
+		Audio a = new Audio();
 		for (int i = 1; i < numOfGuns+1; i++) {
 			bullets.add(new Bullet(x+width, y+i*height/(numOfGuns+1),8,4, speedBullets, color));
 		}

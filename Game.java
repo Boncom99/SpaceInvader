@@ -6,6 +6,10 @@ import java.util.Random;
 
 public class Game {
 	boolean showInfo= true;
+	//Audio 
+	Audio audioShoot= new Audio();
+	List<Audio> audios= new ArrayList<Audio>();
+
 	//bullets
 	List<Bullet> bullets = new ArrayList<Bullet>();
 	Color bulletColor;
@@ -50,6 +54,8 @@ public class Game {
 	int Sy;
 	int SH;
 
+	//Explosions;
+	List<Explosion> explosions = new ArrayList<Explosion>();
 	//background stars
 	List<Star> stars = new ArrayList<Star>();
 	//Game
@@ -92,7 +98,7 @@ public class Game {
 		SH = 100;
 		//Wall
 		//
-		totalMovesVertical = initialY * 2 -12;
+		totalMovesVertical = initialY * 2 - 12;
 
 	
 
@@ -169,6 +175,8 @@ public class Game {
 		long timeNow = System.currentTimeMillis();
 		long time = timeNow - TimeShoot;
 		if (time < 0 || time > ShootingRateShip) {
+			audioShoot.shoot();
+			//audios.add(new Audio());
 			TimeShoot = timeNow;
 			ship.shoot(bullets, speedBullets, bulletColor);
 		}
@@ -186,6 +194,19 @@ public class Game {
 		}	
 	}
 
+	void deleteExplosion() {
+		System.out.println("num= "+ explosions.size());
+		List<Explosion> found= new ArrayList<Explosion>();			
+		for (Explosion explosion: explosions) {
+				System.out.print("x= " + explosion.x + " ");
+				System.out.println("y="+ explosion.y);
+			if (explosion.over()) {
+				found.add(explosion);
+			}
+
+		}
+		explosions.removeAll(found);
+	}
 	void randomMove() {
 
 		long timeNow = System.currentTimeMillis();
@@ -201,6 +222,7 @@ public class Game {
 
 		aliensShoot();
 		moveShip(randZERO_ONE);
+		checkaudios();
 		moves();
 		impacts();
 	}
@@ -283,7 +305,7 @@ public class Game {
 						GenerateWall();
 					}
 					impacts();
-					aliensShoot();
+					//aliensShoot();
 					moves();
 					rePaint();
 					f.repaint();
@@ -317,6 +339,7 @@ public class Game {
 		impactAlien();
 		ship.impactShip(bulletsAliens);
 		impactBullets();
+		deleteExplosion();
 	}
 	
 //PAINTING
@@ -339,6 +362,9 @@ public class Game {
 		}
 		for (Wall w : walls) {
 			w.paint(g);
+		}
+		for (Explosion explosion : explosions) {
+			explosion.paint(g);
 		}
 		g.setColor(new Color(66, 233, 244));
 		g.drawString("SPACE INVADERS", f.WIDTH/2-350, f.HEIGHT/2);
@@ -404,6 +430,9 @@ public class Game {
 		for (Wall wall : walls) {
 			wall.paint(g);
 		}
+		for (Explosion explosion : explosions){
+			explosion.paint(g);
+		}
 	}
 
 void repaintAnimation() {
@@ -438,7 +467,16 @@ void repaintAnimation() {
 
 
 
-
+	void checkaudios() {
+		audioShoot.close();
+		/*List<Audio> found = new ArrayList<Audio>();
+		for (Audio audio : audios){
+			if (audio.close()) {
+				found.add(audio);
+			}
+		}
+		audios.removeAll(found);*/
+	}
 
 	void moveAliens() {
 		for(int i=0;i<aliens.size();i++){
@@ -495,8 +533,10 @@ void repaintAnimation() {
 				for (Brick brick : walls.get(i).bricks) {
 					if (brick.impact(bullets)) {
 						foundBrick.add(brick);	
+						explosions.add(new Explosion(brick.x, brick.y, 30, 30, 0, Color.RED, System.currentTimeMillis()));
 					} else if(brick.impact(bulletsAliens)) {
 						foundBrick.add(brick);	
+						explosions.add(new Explosion(brick.x, brick.y, 30, 30, 0, Color.RED, System.currentTimeMillis()));
 					}
 				}
 				walls.get(i).bricks.removeAll(foundBrick);
@@ -510,6 +550,8 @@ void repaintAnimation() {
 
 				if (alien.impactAlien(bullets)) {
 					foundB.add(alien);
+					explosions.add(new Explosion(alien.x, alien.y, 30, 30, 0, Color.RED, System.currentTimeMillis()));
+
 				}
 			}
 			aliens.removeAll(foundB);
