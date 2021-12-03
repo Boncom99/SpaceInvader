@@ -7,8 +7,10 @@ import java.util.Random;
 public class Game {
 	boolean showInfo= true;
 	//Audio 
-	Audio audioShoot= new Audio();
-	List<Audio> audios= new ArrayList<Audio>();
+	//Audio audioShoot= new Audio(1);
+	//Audio audioExplosion= new Audio(2);
+	List<Audio> audiosShoot= new ArrayList<Audio>();
+	List<Audio> audiosExplosion= new ArrayList<Audio>();
 
 	//bullets
 	List<Bullet> bullets = new ArrayList<Bullet>();
@@ -175,8 +177,8 @@ public class Game {
 		long timeNow = System.currentTimeMillis();
 		long time = timeNow - TimeShoot;
 		if (time < 0 || time > ShootingRateShip) {
-			audioShoot.shoot();
-			//audios.add(new Audio());
+			//audioShoot.start();
+			audiosShoot.add(new Audio(1));
 			TimeShoot = timeNow;
 			ship.shoot(bullets, speedBullets, bulletColor);
 		}
@@ -195,11 +197,8 @@ public class Game {
 	}
 
 	void deleteExplosion() {
-		System.out.println("num= "+ explosions.size());
 		List<Explosion> found= new ArrayList<Explosion>();			
 		for (Explosion explosion: explosions) {
-				System.out.print("x= " + explosion.x + " ");
-				System.out.println("y="+ explosion.y);
 			if (explosion.over()) {
 				found.add(explosion);
 			}
@@ -305,7 +304,7 @@ public class Game {
 						GenerateWall();
 					}
 					impacts();
-					//aliensShoot();
+					aliensShoot();
 					moves();
 					rePaint();
 					f.repaint();
@@ -468,14 +467,22 @@ void repaintAnimation() {
 
 
 	void checkaudios() {
-		audioShoot.close();
-		/*List<Audio> found = new ArrayList<Audio>();
-		for (Audio audio : audios){
+		//audioShoot.close();
+		//audioExplosion.close();
+		List<Audio> found = new ArrayList<Audio>();
+		for (Audio audio : audiosShoot){
 			if (audio.close()) {
 				found.add(audio);
 			}
 		}
-		audios.removeAll(found);*/
+		audiosShoot.removeAll(found);
+		found.clear();
+		for (Audio audio : audiosExplosion){
+			if (audio.close()) {
+				found.add(audio);
+			}
+		}
+		audiosExplosion.removeAll(found);
 	}
 
 	void moveAliens() {
@@ -523,7 +530,13 @@ void repaintAnimation() {
 		}
 	}
 
-
+	void explosion(int x, int y, boolean audio) {
+		explosions.add(new Explosion(x,y, 30, 30, 0, Color.RED, System.currentTimeMillis()));
+		//audioExplosion.start();
+		if (audio) {
+			audiosExplosion.add(new Audio(2));
+		}
+	}
 	void wallImpacts() {
 		for (int i = 0; i < walls.size(); i++) {
 			
@@ -533,10 +546,10 @@ void repaintAnimation() {
 				for (Brick brick : walls.get(i).bricks) {
 					if (brick.impact(bullets)) {
 						foundBrick.add(brick);	
-						explosions.add(new Explosion(brick.x, brick.y, 30, 30, 0, Color.RED, System.currentTimeMillis()));
+						explosion(brick.x, brick.y, false);
 					} else if(brick.impact(bulletsAliens)) {
 						foundBrick.add(brick);	
-						explosions.add(new Explosion(brick.x, brick.y, 30, 30, 0, Color.RED, System.currentTimeMillis()));
+						explosion(brick.x, brick.y, false);
 					}
 				}
 				walls.get(i).bricks.removeAll(foundBrick);
@@ -550,7 +563,7 @@ void repaintAnimation() {
 
 				if (alien.impactAlien(bullets)) {
 					foundB.add(alien);
-					explosions.add(new Explosion(alien.x, alien.y, 30, 30, 0, Color.RED, System.currentTimeMillis()));
+					explosion(alien.x+(alien.width/2), alien.y+(alien.height/2), true);
 
 				}
 			}
@@ -562,6 +575,7 @@ void repaintAnimation() {
 		List<Bullet> foundB = new ArrayList<Bullet>();
 		for (Bullet bullet : bullets) {
 			if (bullet.impact(bulletsAliens)) {
+				explosions.add(new Explosion(bullet.x,bullet.y,10, 10, 0, Color.RED, System.currentTimeMillis()));
 				foundB.add(bullet);
 			}
 		}
