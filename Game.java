@@ -409,7 +409,7 @@ public class Game {
 			g.setColor(textColor);
 			int x = f.WIDTH - 150;
 			g.drawString("SCORE: " + score, x, 400);
-			g.drawString("LEVEL: " + (level), x, 450);
+			g.drawString("LEVEL: " + (level+1), x, 450);
 			g.drawString("LIVES : " + ship.lives, x, 500);
 			g.setFont(f.TinyFont);
 			g.drawString("MAX SCORE: " +MAXSCORE.score, x, 550);
@@ -429,7 +429,7 @@ public class Game {
 			g.setColor(textColor);
 			int x = f.WIDTH - 150;
 			g.drawString("SCORE: " + score, x, 400);
-			g.drawString("LEVEL: " + (level), x, 450);
+			g.drawString("LEVEL: " + (level +1), x, 450);
 			g.drawString("LIVES : " + ship.lives, x, 500);
 			g.setFont(f.TinyFont);
 			g.drawString("max score: " +MAXSCORE.score, x, 550);
@@ -461,11 +461,15 @@ void repaintAnimation() {
 		}
 		g.setColor(new Color(66, 233, 244));
 		g.drawString("SPACE INVADERS", 550, 100);
+		g.setFont(f.BigFont);
+		g.setColor(new Color(235, 223, 100));
+		g.drawString("LEVEL "+level+1, f.WIDTH/2-200, f.HEIGHT/2);
 		if (showInfo) {
+			g.setFont(f.smallFont);
 			g.setColor(textColor);
 			int x = f.WIDTH - 150;
 			g.drawString("SCORE: " + score, x, 400);
-			g.drawString("LEVEL: " + (level), x, 450);
+			g.drawString("LEVEL: " + (level+1), x, 450);
 			g.drawString("LIVES : " + ship.lives, x, 500);
 			g.setFont(f.TinyFont);
 			g.drawString("MAX SCORE: " + MAXSCORE.score, x, 550);
@@ -481,10 +485,6 @@ void repaintAnimation() {
 			wall.paint(g);
 		}
 	}	
-
-
-
-
 
 	void checkaudios() {
 		List<Audio> found = new ArrayList<Audio>();
