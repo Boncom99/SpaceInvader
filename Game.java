@@ -9,6 +9,7 @@ public class Game {
 	//Audio 
 	List<Audio> audiosShoot= new ArrayList<Audio>();
 	List<Audio> audiosExplosion= new ArrayList<Audio>();
+	List<Audio> audiosLoseLive= new ArrayList<Audio>();
 
 	//bullets
 	List<Bullet> bullets = new ArrayList<Bullet>();
@@ -94,7 +95,7 @@ public class Game {
 		ship = new Ship(X,f.HEIGHT / 2,20,45,speedShip, shipColor, 3, 2);
 
 		//Aliens position
-	 	initialX = 2*(f.WIDTH- (AliensWidth+marginH)* numOfAliensPerRow)/3;
+	 	initialX = 2*(f.WIDTH- (AliensWidth+marginH)* numOfAliensPerRow)/3 +100;
 		initialY = (f.HEIGHT- (AliensHeight+marginV)* numOfAliensPerColumn)/2;
 		//Start Button position
 		Sx = f.WIDTH / 2 - 150;
@@ -344,7 +345,7 @@ public class Game {
 	void impacts(){
 		wallImpacts();
 		impactAlien();
-		ship.impactShip(bulletsAliens);
+		ship.impactShip(bulletsAliens, audiosLoseLive);
 		impactBullets();
 		deleteExplosion();
 	}
@@ -463,7 +464,7 @@ void repaintAnimation() {
 		g.drawString("SPACE INVADERS", 550, 100);
 		g.setFont(f.BigFont);
 		g.setColor(new Color(235, 223, 100));
-		g.drawString("LEVEL "+level+1, f.WIDTH/2-200, f.HEIGHT/2);
+		g.drawString("LEVEL "+(level+1), f.WIDTH/2-200, f.HEIGHT/2);
 		if (showInfo) {
 			g.setFont(f.smallFont);
 			g.setColor(textColor);
@@ -501,6 +502,13 @@ void repaintAnimation() {
 			}
 		}
 		audiosExplosion.removeAll(found);
+		found.clear();
+		for (Audio audio : audiosLoseLive){
+			if (audio.close()) {
+				found.add(audio);
+			}
+		}
+		audiosLoseLive.removeAll(found);
 	}
 
 	void moveAliens() {
@@ -511,13 +519,17 @@ void repaintAnimation() {
 				aliens.get(i).move(0);
 			}
 			aliens.get(i).moveVertical();
-			if (aliens.get(i).IsOutOfRange(f.WIDTH,f.HEIGHT)) {
+			if (aliens.get(i).x<X+90) {
 				aliens.remove(i);
 				ship.lives--;
+				audiosLoseLive.add(new Audio(3));
 			}
 		}
 	}
 
+	void loseLive() {
+		
+	}
 	void moveBullets() {
 		List<Bullet> OUT = new ArrayList<Bullet>();
 			for (Bullet bullet : bullets) {

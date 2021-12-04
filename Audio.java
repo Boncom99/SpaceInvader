@@ -9,31 +9,42 @@ public class Audio{
     Clip audio;
 
     public Audio(int type) {
-        if (type == 1) {
-            try {
-                audio = AudioSystem.getClip();
-                audio.open(AudioSystem.getAudioInputStream(new File("Sounds/shoot.wav")));
-                audio.start();
-            } catch (Exception e) {
-                System.out.println("" + e);
-            }
+        switch (type) {
+            case 1:
+                try {
+                    audio = AudioSystem.getClip();
+                    audio.open(AudioSystem.getAudioInputStream(new File("Sounds/shoot.wav")));
+                    audio.start();
+                } catch (Exception e) {
+                    System.out.println("" + e);
+                }
+            break;
+            case 2:
+                try {
+                    audio= AudioSystem.getClip();
+                    audio.open(AudioSystem.getAudioInputStream(new File("Sounds/explosion.wav")));
+                    audio.start();
+                } catch (Exception e) {
+                    System.out.println("" + e);
+                }
+            break;
+            case 3:
+                try {
+                    audio= AudioSystem.getClip();
+                    audio.open(AudioSystem.getAudioInputStream(new File("Sounds/invaderkilled.wav")));
+                    audio.start();
+                } catch (Exception e) {
+                    System.out.println("" + e);
+                } 
+            break;
         }
-         else if (type == 2) {
-
-             try {
-            audio= AudioSystem.getClip();
-            audio.open(AudioSystem.getAudioInputStream(new File("Sounds/explosion.wav")));
-            audio.start();
-            } catch (Exception e) {
-            System.out.println("" + e);
-            }
-        }
+     
     }
 
     boolean close() {
         if (!audio.isRunning())
         {
-            audio.stop(); 
+            //audio.stop(); 
             //audio.close(); 
             return true;
         }

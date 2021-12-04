@@ -17,13 +17,14 @@ public class Ship extends MovingObject{
 		y+= k*speed;
 	}
 
-	void impactShip(List<Bullet> B){
+	void impactShip(List<Bullet> B, List<Audio> audio){
 		if (B.size() > 0) {
 			List<Bullet> foundB = new ArrayList<Bullet>();
 			for (Bullet b : B) {
 				if (this.overlap(b)) {
 					foundB.add(b);
 					this.lives--;
+					audio.add(new Audio(3));
 				}
 			}
 			B.removeAll(foundB);
