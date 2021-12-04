@@ -33,7 +33,7 @@ public class Audio{
     boolean close() {
         if (!audio.isRunning())
         {
-            //audio.stop(); 
+            audio.stop(); 
             //audio.close(); 
             return true;
         }

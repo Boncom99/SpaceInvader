@@ -7,8 +7,6 @@ import java.util.Random;
 public class Game {
 	boolean showInfo= true;
 	//Audio 
-	//Audio audioShoot= new Audio(1);
-	//Audio audioExplosion= new Audio(2);
 	List<Audio> audiosShoot= new ArrayList<Audio>();
 	List<Audio> audiosExplosion= new ArrayList<Audio>();
 
@@ -187,7 +185,6 @@ public class Game {
 		long timeNow = System.currentTimeMillis();
 		long time = timeNow - TimeShoot;
 		if (time < 0 || time > ShootingRateShip) {
-			//audioShoot.start();
 			audiosShoot.add(new Audio(1));
 			TimeShoot = timeNow;
 			ship.shoot(bullets, speedBullets, bulletColor);
@@ -490,8 +487,6 @@ void repaintAnimation() {
 
 
 	void checkaudios() {
-		//audioShoot.close();
-		//audioExplosion.close();
 		List<Audio> found = new ArrayList<Audio>();
 		for (Audio audio : audiosShoot){
 			if (audio.close()) {
@@ -555,7 +550,6 @@ void repaintAnimation() {
 
 	void explosion(int x, int y, boolean audio) {
 		explosions.add(new Explosion(x,y, 30, 30, 0, Color.RED, System.currentTimeMillis()));
-		//audioExplosion.start();
 		if (audio) {
 			audiosExplosion.add(new Audio(2));
 		}
