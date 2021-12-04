@@ -28,6 +28,7 @@ public class Window extends Frame implements KeyListener, WindowListener, MouseL
 	Font MainFont;
 	Font MediumFont;
 	Font smallFont;
+	Font TinyFont;
 	Font BigFont;
 	File file = new File("background.bmp");
 	/*String audioFile = "bip.mp3";
@@ -45,6 +46,7 @@ public class Window extends Frame implements KeyListener, WindowListener, MouseL
 
 		MainFont = Font.createFont(Font.TRUETYPE_FONT, new File ("ARCADE.TTF"));
 		 smallFont=MainFont.deriveFont(30f);
+		 TinyFont=MainFont.deriveFont(20f);
 		 MediumFont=MainFont.deriveFont(65f);
 		 BigFont=MainFont.deriveFont(100f);
 		}

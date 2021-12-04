@@ -61,6 +61,8 @@ public class Game {
 	//background stars
 	List<Star> stars = new ArrayList<Star>();
 	//Game
+	MaxScore MAXSCORE;
+	boolean NewMaximum = false;
 	boolean gameStart=false;
 	long TimeStart = 0;
 	int randZERO_ONE = 1;
@@ -81,6 +83,9 @@ public class Game {
 		this.g=f.g;
 	}
 	void initialize() {
+		//maxscore
+		MAXSCORE= new MaxScore();
+
 		//Colors
 		bulletColor = new Color(248, 59, 58) ; //red
 		shipColor = new Color (83, 83, 241); //lila
@@ -128,6 +133,11 @@ public class Game {
 	boolean gameOver() {
 		if (ship.lives <= 0) {
 			gameStart = false;
+			if (score >= MAXSCORE.score) {
+				NewMaximum = true;
+				MAXSCORE.score = score;
+				MAXSCORE.write();
+			}
 			return true;
 		}
 		return false;
@@ -240,6 +250,7 @@ public class Game {
 		ship.lives = 3;
 		AliensLives = 1;
 		score = 0;
+		NewMaximum = false;
 		level = 0;
 		bulletPower=1;
 		timeDelayBullet =  50;
@@ -387,8 +398,14 @@ public class Game {
 		g.drawString("SPACE INVADERS", f.WIDTH/2-380, f.HEIGHT/2-100);
 		g.setColor(new Color(235, 223, 100));
 		g.drawString("GAME OVER ", f.WIDTH/2-250, f.HEIGHT/2);
+		if (NewMaximum) {
+		g.setFont(f.smallFont);
+		g.setColor(new Color(83, 83, 241));
+		g.drawString("NEW MAX SCORE: "+MAXSCORE.score, f.WIDTH/2-250+100, f.HEIGHT/2+100);
+		}
 		//g.fillRect(Sx, Sy, SW, SH);
 		g.setFont(f.MediumFont);
+		g.setColor(new Color(235, 223, 100));
 		g.drawString("PLAY AGAIN", Sx, Sy+100);
 		if (showInfo) {
 			g.setFont(f.smallFont);
@@ -397,6 +414,8 @@ public class Game {
 			g.drawString("SCORE: " + score, x, 400);
 			g.drawString("LEVEL: " + (level), x, 450);
 			g.drawString("LIVES : " + ship.lives, x, 500);
+			g.setFont(f.TinyFont);
+			g.drawString("MAX SCORE: " +MAXSCORE.score, x, 550);
 		}
 	}
 
@@ -415,6 +434,8 @@ public class Game {
 			g.drawString("SCORE: " + score, x, 400);
 			g.drawString("LEVEL: " + (level), x, 450);
 			g.drawString("LIVES : " + ship.lives, x, 500);
+			g.setFont(f.TinyFont);
+			g.drawString("max score: " +MAXSCORE.score, x, 550);
 		}
 		ship.paintShip(g);
 		for (Bullet bullet : bullets) {
@@ -449,6 +470,8 @@ void repaintAnimation() {
 			g.drawString("SCORE: " + score, x, 400);
 			g.drawString("LEVEL: " + (level), x, 450);
 			g.drawString("LIVES : " + ship.lives, x, 500);
+			g.setFont(f.TinyFont);
+			g.drawString("MAX SCORE: " + MAXSCORE.score, x, 550);
 		}
 		ship.paintShip(g);
 		for (Bullet bullet : bullets) {
@@ -563,6 +586,8 @@ void repaintAnimation() {
 
 				if (alien.impactAlien(bullets)) {
 					foundB.add(alien);
+					score++;
+
 					explosion(alien.x+(alien.width/2), alien.y+(alien.height/2), true);
 
 				}
